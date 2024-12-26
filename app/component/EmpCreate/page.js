@@ -9,7 +9,7 @@ import {
   getEmployeeById,
   updateEmployee,
 } from "@/api/employee";
-import { Input, Select, Button, Typography, Row, Col } from "antd";
+import { Input, Select, Button, Typography, Row, Col, DatePicker } from "antd";
 import { useSearchParams, useRouter } from "next/navigation";
 
 const { Option } = Select;
@@ -23,6 +23,8 @@ const initialValues = {
   email: "",
   phoneNumber: "",
   address: "",
+  dateOfJoining: null,
+  grossSalary: "",
 };
 
 const validationSchema = Yup.object({
@@ -37,6 +39,10 @@ const validationSchema = Yup.object({
     .matches(/^\d+$/, "Phone number must be digits only")
     .required("Phone number is required"),
   address: Yup.string().required("Address is required"),
+  dateOfJoining: Yup.date().required("Date of Joining is required"),
+  grossSalary: Yup.number()
+    .typeError("Gross Salary must be a number")
+    .required("Gross Salary is required"),
 });
 
 const EmployeeCreate = () => {
@@ -69,6 +75,10 @@ const EmployeeCreate = () => {
       PhoneNumber: values.phoneNumber,
       Address: values.address,
       City: values.city,
+      DateOfJoining: values.dateOfJoining
+      ? values.dateOfJoining.format("YYYY-MM-DD")
+      : null,
+    GrossSalary: values.grossSalary,
     };
     if (employeeId) {
       updateEmployee(
@@ -286,7 +296,49 @@ const EmployeeCreate = () => {
                   />
                 </div>
               </Col>
-              
+
+              <Col span={12}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="dateOfJoining" style={{ fontWeight: "bold" }}>
+                    Date of Joining:
+                  </label>
+                  <Field name="dateOfJoining">
+                    {({ field }) => (
+                      <DatePicker
+                        {...field}
+                        style={{ width: "100%" }}
+                        placeholder="Select Date of Joining"
+                        onChange={(value) =>
+                          setFieldValue("dateOfJoining", value)
+                        }
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="dateOfJoining"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+
+              <Col span={12}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="grossSalary" style={{ fontWeight: "bold" }}>
+                    Gross Salary:
+                  </label>
+                  <Field name="grossSalary">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter Gross Salary" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="grossSalary"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
             </Row>
 
             <Button
