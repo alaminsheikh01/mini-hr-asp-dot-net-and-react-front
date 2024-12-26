@@ -4,6 +4,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Input, Button, Typography, Row, Col } from "antd";
+import { toast } from "react-toastify";
 
 const { Title } = Typography;
 
@@ -20,8 +21,9 @@ const DesignationCreate = () => {
     code: Yup.string().required("Designation Code is required"),
   });
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values, { resetForm }) => {
     createDesignation(values, setLoading);
+    resetForm(); // Reset the form
   };
 
   return (
@@ -34,7 +36,7 @@ const DesignationCreate = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({isSubmitting, errors, touched}) => (
+        {({}) => (
           <Form
             style={{
               maxWidth: "600px",

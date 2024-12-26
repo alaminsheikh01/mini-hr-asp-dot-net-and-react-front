@@ -2,45 +2,62 @@
 import React, { useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { createEmployee, getDepartments, getDesignations } from "@/api/employee";
+import {
+  createEmployee,
+  getDepartments,
+  getDesignations,
+  getEmployeeById,
+  updateEmployee,
+} from "@/api/employee";
 import { Input, Select, Button, Typography, Row, Col } from "antd";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const { Option } = Select;
 const { Title } = Typography;
 
+const initialValues = {
+  firstname: "",
+  lastname: "",
+  department: "",
+  designation: "",
+  email: "",
+  phoneNumber: "",
+  address: "",
+};
+
+const validationSchema = Yup.object({
+  firstname: Yup.string().required("First Name is required"),
+  lastname: Yup.string().required("Last Name is required"),
+  department: Yup.string().required("Please select a department").nullable(),
+  designation: Yup.string().required("Please select a designation").nullable(),
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  phoneNumber: Yup.string()
+    .matches(/^\d+$/, "Phone number must be digits only")
+    .required("Phone number is required"),
+  address: Yup.string().required("Address is required"),
+});
+
 const EmployeeCreate = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const employeeId = searchParams.get("id");
+
   const [departments, setDepartments] = React.useState([]);
   const [designations, setDesignations] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [employee, setEmployee] = React.useState(null);
 
   useEffect(() => {
     getDepartments(setDepartments, setLoading);
     getDesignations(setDesignations, setLoading);
-  }, []);
-
-  const initialValues = {
-    firstname: "",
-    lastname: "",
-    department: "",
-    designation: "",
-    email: "",
-    phoneNumber: "",
-    address: "",
-  };
-
-  const validationSchema = Yup.object({
-    firstname: Yup.string().required("First Name is required"),
-    lastname: Yup.string().required("Last Name is required"),
-    department: Yup.string().required("Please select a department").nullable(),
-    designation: Yup.string().required("Please select a designation").nullable(),
-    email: Yup.string()
-      .email("Invalid email format")
-      .required("Email is required"),
-    phoneNumber: Yup.string()
-      .matches(/^\d+$/, "Phone number must be digits only")
-      .required("Phone number is required"),
-    address: Yup.string().required("Address is required"),
-  });
+    // If editing, fetch employee data
+    if (employeeId) {
+      getEmployeeById(employeeId, setEmployee, setLoading);
+    }
+  }, [employeeId]);
 
   const handleSubmit = (values) => {
     const payload = {
@@ -51,17 +68,32 @@ const EmployeeCreate = () => {
       Email: values.email,
       PhoneNumber: values.phoneNumber,
       Address: values.address,
+      City: values.city,
     };
-    createEmployee(payload, setLoading)
+    if (employeeId) {
+      updateEmployee(
+        payload,
+        setLoading,
+        () => {
+          router.push("/component/EmpList");
+        },
+        employeeId
+      );
+    } else {
+      createEmployee(payload, setLoading, () =>
+        router.push("/component/EmpList")
+      );
+    }
   };
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <Title level={2} style={{ textAlign: "center" }}>
-        Employee Create Page
+        {employeeId ? "Employee Edit Page" : "Employee Create Page"}
       </Title>
       <Formik
-        initialValues={initialValues}
+        enableReinitialize
+        initialValues={employeeId ? employee : initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
@@ -124,6 +156,7 @@ const EmployeeCreate = () => {
                         {...field}
                         placeholder="Select a department"
                         style={{ width: "100%" }}
+                        value={field.value}
                         onChange={(value, op) =>
                           setFieldValue("department", value)
                         }
@@ -158,6 +191,7 @@ const EmployeeCreate = () => {
                         {...field}
                         placeholder="Select a designation"
                         style={{ width: "100%" }}
+                        value={field.value}
                         onChange={(value, op) => {
                           setFieldValue("designation", value);
                         }}
@@ -181,7 +215,7 @@ const EmployeeCreate = () => {
                 </div>
               </Col>
 
-              <Col span={24}>
+              <Col span={12}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="email" style={{ fontWeight: "bold" }}>
                     Email:
@@ -234,6 +268,25 @@ const EmployeeCreate = () => {
                   />
                 </div>
               </Col>
+
+              <Col span={12}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="city" style={{ fontWeight: "bold" }}>
+                    City:
+                  </label>
+                  <Field name="city">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter City" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="city"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              
             </Row>
 
             <Button
@@ -242,7 +295,11 @@ const EmployeeCreate = () => {
               loading={loading}
               style={{ width: "100%" }}
             >
-              {loading ? "Submitting..." : "Create Employee"}
+              {loading
+                ? "Submitting..."
+                : !employeeId
+                ? "Create Employee"
+                : "Update Employee"}
             </Button>
           </Form>
         )}
