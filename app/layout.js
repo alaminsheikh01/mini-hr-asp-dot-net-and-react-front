@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Layout, Menu } from 'antd';
 import { useRouter } from 'next/navigation';
 import { ToastContainer } from 'react-toastify';
@@ -17,36 +17,58 @@ const { Sider, Content } = Layout;
 export default function RootLayout({ children }) {
   const router = useRouter();
 
+  document.title = 'Home - Employee Management';
+
   const menuItems = [
     {
       key: '1',
       icon: <HomeOutlined />,
       label: 'Home',
-      onClick: () => router.push('/'),
+      onClick: () => {
+        document.title = 'Home - Employee Management';
+        router.push('/');
+      },
     },
     {
       key: '2',
       icon: <UnorderedListOutlined />,
-      label: 'Employee List',
-      onClick: () => router.push('/component/EmpList'),
+      label: 'Employee',
+      children: [
+        {
+          key: 'sub1',
+          label: 'Employee List',
+          onClick: () => {
+            document.title = 'Employee List - Employee Management';
+            router.push('/component/EmpList');
+          },
+        },
+        {
+          key: 'sub2',
+          label: 'Create Employee',
+          onClick: () => {
+            document.title = 'Create Employee - Employee Management';
+            router.push('/component/EmpCreate');
+          },
+        },
+      ],
     },
     {
       key: '3',
-      icon: <PlusOutlined />,
-      label: 'Create Employee',
-      onClick: () => router.push('/component/EmpCreate'),
+      icon: <AppstoreAddOutlined />,
+      label: 'Create Department',
+      onClick: () => {
+        document.title = 'Create Department - Employee Management';
+        router.push('/component/DepCreate');
+      },
     },
     {
       key: '4',
-      icon: <AppstoreAddOutlined />,
-      label: 'Create Department',
-      onClick: () => router.push('/component/DepCreate'),
-    },
-    {
-      key: '5',
       icon: <TeamOutlined />,
       label: 'Create Designation',
-      onClick: () => router.push('/component/DegCreate'),
+      onClick: () => {
+        document.title = 'Create Designation - Employee Management';
+        router.push('/component/DegCreate');
+      },
     },
   ];
 
