@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { Layout, Menu } from "antd";
 import { useRouter } from "next/navigation";
 import { ToastContainer } from "react-toastify";
@@ -14,10 +14,25 @@ import {
 
 const { Sider, Content } = Layout;
 
+// Lazy-loaded components
+const EmpList = React.lazy(() => import("../component/EmpList"));
+const EmpCreate = React.lazy(() => import("../component/EmpCreate"));
+const DepCreate = React.lazy(() => import("../component/DepCreate"));
+const DegCreate = React.lazy(() => import("../component/DegCreate"));
+const EmpSalary = React.lazy(() => import("../component/EmpSalary"));
+
 export default function RootLayout({ children }) {
   const router = useRouter();
 
-  document.title = "Home - Employee Management";
+  useEffect(() => {
+    // Prefetching routes for faster navigation
+    router.prefetch("/");
+    router.prefetch("/component/EmpList");
+    router.prefetch("/component/EmpCreate");
+    router.prefetch("/component/DepCreate");
+    router.prefetch("/component/DegCreate");
+    router.prefetch("/component/EmpSalary");
+  }, [router]);
 
   const menuItems = [
     {
@@ -103,7 +118,9 @@ export default function RootLayout({ children }) {
             <Content
               style={{ margin: "20px", padding: "20px", background: "#fff" }}
             >
-              {children}
+              <Suspense fallback={<div>Loading...</div>}>
+                {children}
+              </Suspense>
               <ToastContainer />
             </Content>
           </Layout>
