@@ -15,11 +15,11 @@ import {
 const { Sider, Content } = Layout;
 
 // Lazy-loaded components
-const EmpList = React.lazy(() => import("../component/EmpList"));
-const EmpCreate = React.lazy(() => import("../component/EmpCreate"));
-const DepCreate = React.lazy(() => import("../component/DepCreate"));
-const DegCreate = React.lazy(() => import("../component/DegCreate"));
-const EmpSalary = React.lazy(() => import("../component/EmpSalary"));
+// const EmpList = React.lazy(() => import("../app/component/EmpList/page.js"));
+// const EmpCreate = React.lazy(() => import("../app/component/EmpCreate/page.js"));
+// const DepCreate = React.lazy(() => import("../app/component/DepCreate/page.js"));
+// const DegCreate = React.lazy(() => import("../app/component/DegCreate/page.js"));
+// const EmpSalary = React.lazy(() => import("../app/component/EmpSalary/page.js"));
 
 export default function RootLayout({ children }) {
   const router = useRouter();
@@ -29,6 +29,7 @@ export default function RootLayout({ children }) {
     router.prefetch("/");
     router.prefetch("/component/EmpList");
     router.prefetch("/component/EmpCreate");
+    router.prefetch("/component/EmpBulk");
     router.prefetch("/component/DepCreate");
     router.prefetch("/component/DegCreate");
     router.prefetch("/component/EmpSalary");
@@ -63,6 +64,14 @@ export default function RootLayout({ children }) {
           onClick: () => {
             document.title = "Create Employee - Employee Management";
             router.push("/component/EmpCreate");
+          },
+        },
+        {
+          key: "sub3",
+          label: "Employee Bulk Upload",
+          onClick: () => {
+            document.title = "Employee Bulk Upload - Employee Management";
+            router.push("/component/EmpBulk");
           },
         },
       ],
