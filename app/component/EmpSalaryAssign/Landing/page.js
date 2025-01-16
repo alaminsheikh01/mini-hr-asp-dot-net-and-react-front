@@ -3,7 +3,6 @@ import { getEmployeesAssign, salaryAssignSaveandUpdate } from "@/api/employee";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Drawer, Divider, Input } from "antd";
-import { toast } from "react-toastify";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -55,9 +54,9 @@ const EmployeeList = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ textAlign: "left", marginBottom: "20px" }}>
+      <h3 style={{ textAlign: "left", marginBottom: "20px" }}>
         Employee Salary Assign List
-      </h1>
+      </h3>
       <table
         style={{
           width: "100%",
