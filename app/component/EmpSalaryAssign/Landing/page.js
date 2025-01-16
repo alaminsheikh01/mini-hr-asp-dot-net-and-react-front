@@ -1,8 +1,9 @@
 "use client";
-import { getEmployeesAssign } from "@/api/employee";
+import { getEmployeesAssign, salaryAssignSaveandUpdate } from "@/api/employee";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Drawer, Divider, Input } from "antd";
+import { toast } from "react-toastify";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -11,17 +12,13 @@ const EmployeeList = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [basicSalary, setBasicSalary] = useState(0); // State to store the basic salary input
 
-  const router = useRouter();
-
   useEffect(() => {
     getEmployeesAssign(setEmployees, setLoading);
   }, []);
 
   const showDrawer = (employee) => {
     setSelectedEmployee(employee);
-    setBasicSalary(
-      Math.min(employee.grossSalary * 0.45, 10000)
-    );
+    setBasicSalary(Math.min(employee.grossSalary * 0.45, 10000));
     setDrawerVisible(true);
   };
 
@@ -39,11 +36,11 @@ const EmployeeList = () => {
 
     return { houseRent, medicalAllowance, conveyance, totalSalary };
   };
-  
+
   const handleBasicSalaryChange = (newBasicSalary) => {
     const { houseRent, medicalAllowance, conveyance, totalSalary } =
       calculateSalaryDetails(newBasicSalary);
-  
+
     setSelectedEmployee((prevEmployee) => ({
       ...prevEmployee,
       basicSalary: +newBasicSalary || 0,
@@ -83,6 +80,12 @@ const EmployeeList = () => {
             <th style={{ border: "1px solid #ddd", padding: "8px" }}>
               Designation
             </th>
+            <th style={{ border: "1px solid #ddd", padding: "8px" }}>
+              Gross Salary
+            </th>
+            <th style={{ border: "1px solid #ddd", padding: "8px" }}>
+              Basic Salary
+            </th>
             <th
               style={{
                 border: "1px solid #ddd",
@@ -101,7 +104,7 @@ const EmployeeList = () => {
               onClick={() => showDrawer(employee)}
               style={{
                 backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#ffffff",
-                cursor: "pointer", // Pointer cursor to indicate clickability
+                cursor: "pointer",
               }}
             >
               <td style={{ border: "1px solid #ddd", padding: "8px" }}>
@@ -118,6 +121,12 @@ const EmployeeList = () => {
               </td>
               <td style={{ border: "1px solid #ddd", padding: "8px" }}>
                 {employee.designationName}
+              </td>
+              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
+                {employee.grossSalary}
+              </td>
+              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
+                {employee.basicSalary}
               </td>
               <td
                 style={{
@@ -138,7 +147,7 @@ const EmployeeList = () => {
                     boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                   }}
                 >
-                  {employee?.status ? "Assign" : "Not Assign"}
+                  {employee?.status ? "Assigned" : "Not Assign"}
                 </span>
               </td>
             </tr>
@@ -302,11 +311,24 @@ const EmployeeList = () => {
                   boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
                 }}
                 onClick={() => {
-                  console.log("Saving employee data:", selectedEmployee);
-                  // Add save logic here
+                  const payload = {
+                    id: selectedEmployee.salaryAssignId || 0,
+                    employeeId: selectedEmployee.employeeId,
+                    basicSalary: selectedEmployee.basicSalary,
+                    houseRent: selectedEmployee.houseRent,
+                    medicalAllowance: selectedEmployee.medicalAllowance,
+                    conveyance: selectedEmployee.conveyance,
+                    grossSalary: selectedEmployee.totalSalary,
+                    status: true,
+                  };
+
+                  salaryAssignSaveandUpdate(payload, setLoading, () => {
+                    getEmployeesAssign(setEmployees, setLoading);
+                    closeDrawer();
+                  });
                 }}
               >
-                Save
+                {selectedEmployee?.salaryAssignId ? "Re-Assign" : "Assign"}
               </button>
             </div>
           </div>

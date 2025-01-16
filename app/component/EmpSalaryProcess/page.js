@@ -4,7 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Input, Select, Button, Typography, Row, Col } from "antd";
 import {
-  createEmpSalare,
+  createEmpSalary,
   getDepartments,
   getDesignations,
   getEmployees,
@@ -27,7 +27,6 @@ const EmployeeSalaryProcess = () => {
 
   const initialValues = {
     employeeId: "",
-    grossSalary: "",
     month: "",
     year: "",
     departmentId: "",
@@ -36,28 +35,21 @@ const EmployeeSalaryProcess = () => {
 
   const validationSchema = Yup.object({
     employeeId: Yup.string().required("Employee is required"),
-    grossSalary: Yup.number()
-      .typeError("Gross Salary must be a number")
-      .required("Gross Salary is required"),
     month: Yup.string().required("Month is required"),
     year: Yup.number()
       .typeError("Year must be a number")
       .required("Year is required"),
-    departmentId: Yup.string().required("Department is required"),
-    designationId: Yup.string().required("Designation is required"),
   });
 
   const handleSubmit = (values, { resetForm }) => {
     const payload = {
       employeeId: values.employeeId,
-      grossSalary: values.grossSalary,
       salaryMonth: values.month,
       salaryYear: +values.year,
       departmentId: values.departmentId,
       designationId: values.designationId,
     };
-    // console.log(payload);
-    createEmpSalare(payload, setLoading);
+    createEmpSalary(payload, setLoading);
     resetForm();
   };
 
@@ -74,7 +66,7 @@ const EmployeeSalaryProcess = () => {
         {({ setFieldValue }) => (
           <Form
             style={{
-              maxWidth: "800px",
+              maxWidth: "1200px",
               margin: "0 auto",
               backgroundColor: "#f9f9f9",
               padding: "20px",
@@ -83,7 +75,7 @@ const EmployeeSalaryProcess = () => {
             }}
           >
             <Row gutter={[16, 16]}>
-              <Col span={12}>
+              <Col span={6}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="employeeId" style={{ fontWeight: "bold" }}>
                     Employee:
@@ -116,25 +108,8 @@ const EmployeeSalaryProcess = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
-                <div style={{ marginBottom: "15px" }}>
-                  <label htmlFor="grossSalary" style={{ fontWeight: "bold" }}>
-                    Gross Salary:
-                  </label>
-                  <Field name="grossSalary">
-                    {({ field }) => (
-                      <Input {...field} placeholder="Enter Gross Salary" />
-                    )}
-                  </Field>
-                  <ErrorMessage
-                    name="grossSalary"
-                    component="div"
-                    style={{ color: "red" }}
-                  />
-                </div>
-              </Col>
 
-              <Col span={12}>
+              <Col span={6}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="month" style={{ fontWeight: "bold" }}>
                     Month:
@@ -176,7 +151,7 @@ const EmployeeSalaryProcess = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={6}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="year" style={{ fontWeight: "bold" }}>
                     Year:
@@ -208,7 +183,7 @@ const EmployeeSalaryProcess = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={6}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="departmentId" style={{ fontWeight: "bold" }}>
                     Department:
@@ -242,7 +217,7 @@ const EmployeeSalaryProcess = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={6}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="designationId" style={{ fontWeight: "bold" }}>
                     Designation:
@@ -275,16 +250,18 @@ const EmployeeSalaryProcess = () => {
                   />
                 </div>
               </Col>
-            </Row>
-
-            <Button
+              <Col span={6} style={{ marginTop: "20px" }}>
+              <Button
               type="primary"
               htmlType="submit"
               loading={loading}
-              style={{ width: "100%" }}
             >
-              Submit
+              Generate
             </Button>
+              </Col>
+            </Row>
+
+           
           </Form>
         )}
       </Formik>

@@ -30,7 +30,6 @@ const initialValues = {
   employeeType: "",
   address: "",
   dateOfJoining: null,
-  grossSalary: "",
 };
 
 const validationSchema = Yup.object({
@@ -53,7 +52,6 @@ const validationSchema = Yup.object({
     .nullable(),
   address: Yup.string(),
   dateOfJoining: Yup.date(),
-  grossSalary: Yup.number().typeError("Gross Salary must be a number"),
 });
 
 const EmployeeCreate = () => {
@@ -342,24 +340,6 @@ const EmployeeCreate = () => {
 
               <Col span={12}>
                 <div style={{ marginBottom: "15px" }}>
-                  <label htmlFor="city" style={{ fontWeight: "bold" }}>
-                    City:
-                  </label>
-                  <Field name="city">
-                    {({ field }) => (
-                      <Input {...field} placeholder="Enter City" />
-                    )}
-                  </Field>
-                  <ErrorMessage
-                    name="city"
-                    component="div"
-                    style={{ color: "red" }}
-                  />
-                </div>
-              </Col>
-
-              <Col span={12}>
-                <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="dateOfJoining" style={{ fontWeight: "bold" }}>
                     Date of Joining:
                   </label>
@@ -377,24 +357,6 @@ const EmployeeCreate = () => {
                   </Field>
                   <ErrorMessage
                     name="dateOfJoining"
-                    component="div"
-                    style={{ color: "red" }}
-                  />
-                </div>
-              </Col>
-
-              <Col span={12}>
-                <div style={{ marginBottom: "15px" }}>
-                  <label htmlFor="grossSalary" style={{ fontWeight: "bold" }}>
-                    Gross Salary:
-                  </label>
-                  <Field name="grossSalary">
-                    {({ field }) => (
-                      <Input {...field} placeholder="Enter Gross Salary" />
-                    )}
-                  </Field>
-                  <ErrorMessage
-                    name="grossSalary"
                     component="div"
                     style={{ color: "red" }}
                   />
