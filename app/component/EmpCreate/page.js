@@ -18,10 +18,16 @@ const { Title } = Typography;
 const initialValues = {
   firstname: "",
   lastname: "",
+  employeeID: "",
+  gender: "",
+  insuranceID: "",
   department: "",
   designation: "",
   email: "",
   phoneNumber: "",
+  dateOfBirth: null,
+  employeeStatus: "",
+  employeeType: "",
   address: "",
   dateOfJoining: null,
   grossSalary: "",
@@ -30,6 +36,9 @@ const initialValues = {
 const validationSchema = Yup.object({
   firstname: Yup.string().required("First Name is required"),
   lastname: Yup.string().required("Last Name is required"),
+  employeeID: Yup.string().required("Employee ID is required"),
+  gender: Yup.string().required("Gender is required").nullable(),
+  insuranceID: Yup.string(),
   department: Yup.string().required("Please select a department").nullable(),
   designation: Yup.string().required("Please select a designation").nullable(),
   email: Yup.string()
@@ -38,11 +47,13 @@ const validationSchema = Yup.object({
   phoneNumber: Yup.string()
     .matches(/^\d+$/, "Phone number must be digits only")
     .required("Phone number is required"),
-  address: Yup.string().required("Address is required"),
-  dateOfJoining: Yup.date().required("Date of Joining is required"),
-  grossSalary: Yup.number()
-    .typeError("Gross Salary must be a number")
-    .required("Gross Salary is required"),
+  dateOfBirth: Yup.date().required("Date of Birth is required"),
+  employeeStatus: Yup.string()
+    .required("Employee Status is required")
+    .nullable(),
+  address: Yup.string(),
+  dateOfJoining: Yup.date(),
+  grossSalary: Yup.number().typeError("Gross Salary must be a number"),
 });
 
 const EmployeeCreate = () => {
@@ -69,24 +80,29 @@ const EmployeeCreate = () => {
     const payload = {
       FirstName: values.firstname,
       LastName: values.lastname,
+      EmployeeID: values.employeeID,
+      Gender: values.gender,
+      InsuranceID: values.insuranceID,
       DepartmentId: values.department,
       DesignationId: values.designation,
       Email: values.email,
       PhoneNumber: values.phoneNumber,
+      DateOfBirth: values.dateOfBirth
+        ? values.dateOfBirth.format("YYYY-MM-DD")
+        : null,
+      EmployeeStatus: values.employeeStatus,
+      EmployeeType: values.employeeType,
       Address: values.address,
-      City: values.city,
       DateOfJoining: values.dateOfJoining
-      ? values.dateOfJoining.format("YYYY-MM-DD")
-      : null,
-    GrossSalary: values.grossSalary,
+        ? values.dateOfJoining.format("YYYY-MM-DD")
+        : null,
+      GrossSalary: values.grossSalary,
     };
     if (employeeId) {
       updateEmployee(
         payload,
         setLoading,
-        () => {
-          router.push("/component/EmpList");
-        },
+        () => router.push("/component/EmpList"),
         employeeId
       );
     } else {
@@ -97,10 +113,11 @@ const EmployeeCreate = () => {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <Title level={2} style={{ textAlign: "center" }}>
+    <div style={{ padding: "10px", fontFamily: "Arial, sans-serif" }}>
+      <Title level={2} style={{ textAlign: "left" }}>
         {employeeId ? "Employee Edit Page" : "Employee Create Page"}
       </Title>
+
       <Formik
         enableReinitialize
         initialValues={employeeId ? employee : initialValues}
@@ -109,8 +126,8 @@ const EmployeeCreate = () => {
       >
         {({ setFieldValue }) => (
           <Form
+            layout="vertical"
             style={{
-              maxWidth: "1000px",
               margin: "0 auto",
               backgroundColor: "#f9f9f9",
               padding: "20px",
@@ -149,6 +166,23 @@ const EmployeeCreate = () => {
                   </Field>
                   <ErrorMessage
                     name="lastname"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={12}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="employeeID" style={{ fontWeight: "bold" }}>
+                    Employee ID:
+                  </label>
+                  <Field name="employeeID">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter Employee ID" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="employeeID"
                     component="div"
                     style={{ color: "red" }}
                   />
@@ -237,6 +271,33 @@ const EmployeeCreate = () => {
                   </Field>
                   <ErrorMessage
                     name="email"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={12}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="gender" style={{ fontWeight: "bold" }}>
+                    Gender:
+                  </label>
+                  <Field name="gender">
+                    {({ field }) => (
+                      <Select
+                        {...field}
+                        placeholder="Select Gender"
+                        style={{ width: "100%" }}
+                        value={field.value}
+                        onChange={(value) => setFieldValue("gender", value)}
+                      >
+                        <Option value="male">Male</Option>
+                        <Option value="female">Female</Option>
+                        <Option value="other">Other</Option>
+                      </Select>
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="gender"
                     component="div"
                     style={{ color: "red" }}
                   />
@@ -339,20 +400,95 @@ const EmployeeCreate = () => {
                   />
                 </div>
               </Col>
-            </Row>
 
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              style={{ width: "100%" }}
-            >
-              {loading
-                ? "Submitting..."
-                : !employeeId
-                ? "Create Employee"
-                : "Update Employee"}
-            </Button>
+              <Col span={12}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="employeeStatus"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Employee Status:
+                  </label>
+                  <Field name="employeeStatus">
+                    {({ field }) => (
+                      <Select
+                        {...field}
+                        placeholder="Select Employee Status"
+                        style={{ width: "100%" }}
+                        value={field.value}
+                        onChange={(value, op) =>
+                          setFieldValue("employeeStatus", value)
+                        }
+                      >
+                        <Option value="Permanent">Permanent</Option>
+                        <Option value="Provision">Provision</Option>
+                        <Option value="Contractual">Contractual</Option>
+                      </Select>
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="employeeStatus"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={12}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="insuranceID" style={{ fontWeight: "bold" }}>
+                    Insurance ID:
+                  </label>
+                  <Field name="insuranceID">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter Insurance ID" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="insuranceID"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+
+              <Col span={12}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="dateOfBirth" style={{ fontWeight: "bold" }}>
+                    Date of Birth:
+                  </label>
+                  <Field name="dateOfBirth">
+                    {({ field }) => (
+                      <DatePicker
+                        {...field}
+                        style={{ width: "100%" }}
+                        placeholder="Select Date of Birth"
+                        onChange={(value) =>
+                          setFieldValue("dateOfBirth", value)
+                        }
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="dateOfBirth"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                style={{ marginTop: "20px" }}
+              >
+                {loading
+                  ? "Submitting..."
+                  : !employeeId
+                  ? "Create Employee"
+                  : "Update Employee"}
+              </Button>
+            </Row>
           </Form>
         )}
       </Formik>

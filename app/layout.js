@@ -111,6 +111,8 @@ export default function RootLayout({ children }) {
         <Layout style={{ minHeight: "100vh" }}>
           <Sider
             style={{
+              position: "fixed",
+              height: "100vh",
               background: "#001529",
             }}
           >
@@ -123,13 +125,16 @@ export default function RootLayout({ children }) {
             ></div>
             <Menu theme="dark" mode="inline" items={menuItems} />
           </Sider>
-          <Layout>
+          <Layout style={{ marginLeft: 200 }}>
+
             <Content
-              style={{ margin: "20px", padding: "20px", background: "#fff" }}
+              style={{
+                margin: "20px",
+                padding: "20px",
+                background: "#fff",
+              }}
             >
-              <Suspense fallback={<div>Loading...</div>}>
-                {children}
-              </Suspense>
+              <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
               <ToastContainer />
             </Content>
           </Layout>

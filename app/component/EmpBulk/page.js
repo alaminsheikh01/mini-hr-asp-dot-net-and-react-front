@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { Table, Button, Upload, message } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Loading3QuartersOutlined, UploadOutlined } from "@ant-design/icons";
 import { toast, ToastContainer } from "react-toastify";
 import { createEmployee } from "@/api/employee";
 
@@ -22,11 +22,24 @@ const BulkAdd = () => {
       const sheet = workbook.Sheets[sheetName];
       const parsedData = XLSX.utils.sheet_to_json(sheet);
 
-      // Transform Date and other fields if needed
       const formattedData = parsedData.map((row) => ({
-        ...row,
-        Date: row.Date
-          ? new Date(row.Date * 86400000 + Date.parse("1899-12-30"))
+        ID: row["ID"] || "",
+        FirstName: row["First Name"] || "",
+        LastName: row["Last Name"] || "",
+        EmployeeID: row["Employee ID"] || "",
+        InsuranceID: row["Insurance ID"] || "",
+        Email: row["Email"] || "",
+        PhoneNumber: row["Phone Number"] || "",
+        DateOfBirth: row["Date of Birth"]
+          ? new Date(row["Date of Birth"] * 86400000 + Date.parse("1899-12-30"))
+              .toISOString()
+              .split("T")[0]
+          : null,
+        Address: row["Address"] || "",
+        DateOfJoining: row["Date of Joining"]
+          ? new Date(
+              row["Date of Joining"] * 86400000 + Date.parse("1899-12-30")
+            )
               .toISOString()
               .split("T")[0]
           : null,
@@ -43,59 +56,39 @@ const BulkAdd = () => {
       return toast.error("No data to save. Please upload a valid Excel file.");
     }
 
-    const payload = uploadedData.map((row) => ({
-      FirstName: row["First Name"],
-      LastName: row["Last Name"],
-      DepartmentId: row["Department ID"],
-      DesignationId: row["Designation ID"],
-      Email: row["Email"],
-      PhoneNumber: row["Phone Number"],
-      Address: row["Address"],
-      City: row["City"],
-      DateOfJoining: row.Date,
-      GrossSalary: row["Gross Salary"],
-    }));
-
     try {
-      await createEmployee(payload, () => setLoading(false), () =>
-        router.push("/component/EmpList")
+      await createEmployee(
+        uploadedData,
+        () => setLoading(false),
+        () => router.push("/component/EmpList")
       );
+      toast.success("Employees saved successfully!");
     } catch (error) {
       toast.error("Failed to save employees");
     }
   };
 
   const columns = [
+    { title: "ID", dataIndex: "ID", key: "id", width: 80 },
+    { title: "First Name", dataIndex: "FirstName", key: "firstName", width: 120 },
+    { title: "Last Name", dataIndex: "LastName", key: "lastName", width: 120 },
+    { title: "Employee ID", dataIndex: "EmployeeID", key: "employeeID", width: 120 },
+    { title: "Insurance ID", dataIndex: "InsuranceID", key: "insuranceID", width: 150 },
+    { title: "Email", dataIndex: "Email", key: "email" },
+    { title: "Phone Number", dataIndex: "PhoneNumber", key: "phoneNumber" },
+    { title: "Date of Birth", dataIndex: "DateOfBirth", key: "dateOfBirth", width: 120 },
+    { title: "Address", dataIndex: "Address", key: "address" },
     {
-      title: "First Name",
-      dataIndex: "First Name",
-      key: "firstName",
-    },
-    {
-      title: "Last Name",
-      dataIndex: "Last Name",
-      key: "lastName",
-    },
-    {
-      title: "Email",
-      dataIndex: "Email",
-      key: "email",
-    },
-    {
-      title: "Salary",
-      dataIndex: "Gross Salary",
-      key: "grossSalary",
-    },
-    {
-      title: "Date",
-      dataIndex: "Date",
-      key: "date",
-    },
-  ];
+      title: "Date of Joining",
+      dataIndex: "DateOfJoining",
+      key: "dateOfJoining",
+      width: 120,
+    }
+    ];
 
   return (
     <div>
-        {loading && <Loader />}
+      {loading && <Loading3QuartersOutlined />}
       <ToastContainer position="top-right" autoClose={3000} />
       <h1>Bulk Employee Upload</h1>
       <Upload
@@ -111,14 +104,19 @@ const BulkAdd = () => {
           <Button
             type="primary"
             onClick={handleSave}
-            style={{ marginTop: "20px", marginBottom: "20px", marginLeft: "20px" }}
+            style={{
+              marginTop: "20px",
+              marginBottom: "20px",
+              marginLeft: "20px",
+            }}
           >
             Save All
           </Button>
           <Table
+            scroll={{ x: 1500 }}
             dataSource={uploadedData}
             columns={columns}
-            rowKey={(record, index) => index} // Use index as a unique key for simplicity
+            rowKey={(record, index) => index}
           />
         </>
       )}
