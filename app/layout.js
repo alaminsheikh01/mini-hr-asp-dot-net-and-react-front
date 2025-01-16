@@ -14,18 +14,10 @@ import {
 
 const { Sider, Content } = Layout;
 
-// Lazy-loaded components
-// const EmpList = React.lazy(() => import("../app/component/EmpList/page.js"));
-// const EmpCreate = React.lazy(() => import("../app/component/EmpCreate/page.js"));
-// const DepCreate = React.lazy(() => import("../app/component/DepCreate/page.js"));
-// const DegCreate = React.lazy(() => import("../app/component/DegCreate/page.js"));
-// const EmpSalary = React.lazy(() => import("../app/component/EmpSalary/page.js"));
-
 export default function RootLayout({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Prefetching routes for faster navigation
     router.prefetch("/");
     router.prefetch("/component/EmpList");
     router.prefetch("/component/EmpCreate");
@@ -48,7 +40,7 @@ export default function RootLayout({ children }) {
     {
       key: "2",
       icon: <UnorderedListOutlined />,
-      label: "Employee",
+      label: "Employee Information",
       children: [
         {
           key: "sub1",
@@ -76,8 +68,32 @@ export default function RootLayout({ children }) {
         },
       ],
     },
+
     {
       key: "3",
+      icon: <TeamOutlined />,
+      label: "Salary Process",
+      children: [
+        {
+          key: "sub4",
+          label: "Employee Salary Assign",
+          onClick: () => {
+            document.title = "Employee Salary - Employee Management";
+            router.push("/component/EmpSalaryAssign/Landing");
+          },
+        },
+        {
+          key: "sub5",
+          label: "Employee Salary Process",
+          onClick: () => {
+            document.title = "Salary Process - Employee Management";
+            router.push("/component/EmpSalaryProcess");
+          },
+        },
+      ],
+    },
+    {
+      key: "4",
       icon: <AppstoreAddOutlined />,
       label: "Create Department",
       onClick: () => {
@@ -86,21 +102,12 @@ export default function RootLayout({ children }) {
       },
     },
     {
-      key: "4",
+      key: "5",
       icon: <TeamOutlined />,
       label: "Create Designation",
       onClick: () => {
         document.title = "Create Designation - Employee Management";
         router.push("/component/DegCreate");
-      },
-    },
-    {
-      key: "5",
-      icon: <TeamOutlined />,
-      label: "Salary Process",
-      onClick: () => {
-        document.title = "Salary Process - Employee Management";
-        router.push("/component/EmpSalary");
       },
     },
   ];
@@ -110,6 +117,7 @@ export default function RootLayout({ children }) {
       <body style={{ margin: 0 }}>
         <Layout style={{ minHeight: "100vh" }}>
           <Sider
+            width={"400!important"} // Adjust this value to your desired width
             style={{
               position: "fixed",
               height: "100vh",
@@ -125,8 +133,8 @@ export default function RootLayout({ children }) {
             ></div>
             <Menu theme="dark" mode="inline" items={menuItems} />
           </Sider>
-          <Layout style={{ marginLeft: 200 }}>
 
+          <Layout style={{ marginLeft: 220 }}>
             <Content
               style={{
                 margin: "20px",

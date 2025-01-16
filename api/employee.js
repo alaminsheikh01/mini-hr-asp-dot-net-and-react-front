@@ -19,6 +19,20 @@ export const getEmployees = async (setter, setLoading) => {
   }
 };
 
+export const getEmployeesAssign = async (setter, setLoading) => {
+  try {
+    setLoading(true);
+    const response = await axios.get(`${API_BASE_URL}/Employee/employeeAssign`);
+    setter(response.data);
+    setLoading(false);
+    return response.data;
+  } catch (error) {
+    toast.warn("Error fetching employees");
+    setLoading(false);
+    throw error;
+  }
+};
+
 
 
 export const getEmployeeById = async (id, setter, setLoading) => {

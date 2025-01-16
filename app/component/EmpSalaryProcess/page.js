@@ -13,7 +13,7 @@ import {
 const { Option } = Select;
 const { Title } = Typography;
 
-const EmployeeSalaryPage = () => {
+const EmployeeSalaryProcess = () => {
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -64,7 +64,7 @@ const EmployeeSalaryPage = () => {
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <Title level={2} style={{ textAlign: "center" }}>
-        Employee Salary
+        Employee Salary Process
       </Title>
       <Formik
         initialValues={initialValues}
@@ -292,4 +292,4 @@ const EmployeeSalaryPage = () => {
   );
 };
 
-export default EmployeeSalaryPage;
+export default EmployeeSalaryProcess;
