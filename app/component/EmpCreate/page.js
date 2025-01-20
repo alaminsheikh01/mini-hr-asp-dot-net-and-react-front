@@ -11,6 +11,7 @@ import {
 } from "@/api/employee";
 import { Input, Select, Button, Typography, Row, Col, DatePicker } from "antd";
 import { useSearchParams, useRouter } from "next/navigation";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -112,9 +113,21 @@ const EmployeeCreate = () => {
 
   return (
     <div style={{ padding: "10px", fontFamily: "Arial, sans-serif" }}>
-      <Title level={2} style={{ textAlign: "left" }}>
-        {employeeId ? "Employee Edit Page" : "Employee Create Page"}
-      </Title>
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <button
+          onClick={() => router.back()}
+          style={{
+            backgroundColor: "transparent",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <ArrowLeftOutlined style={{ fontSize: "24px", color: "#0070f3" }} />
+        </button>
+        <h2 level={2} style={{ textAlign: "left", paddingBottom: "0px" }}>
+          {employeeId ? "Employee Edit Page" : "Employee Create Page"}
+        </h2>
+      </div>
 
       <Formik
         enableReinitialize
@@ -445,7 +458,7 @@ const EmployeeCreate = () => {
                 style={{ marginTop: "20px" }}
               >
                 {loading
-                  ? "Submitting..."
+                  ? "Loading..."
                   : !employeeId
                   ? "Create Employee"
                   : "Update Employee"}

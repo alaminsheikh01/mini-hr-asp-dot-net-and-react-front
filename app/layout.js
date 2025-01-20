@@ -117,7 +117,7 @@ export default function RootLayout({ children }) {
       <body style={{ margin: 0 }}>
         <Layout style={{ minHeight: "100vh" }}>
           <Sider
-            width={"400!important"} // Adjust this value to your desired width
+            width={"260!important"}
             style={{
               position: "fixed",
               height: "100vh",
@@ -126,19 +126,29 @@ export default function RootLayout({ children }) {
           >
             <div
               style={{
-                height: "32px",
-                margin: "16px",
-                background: "rgba(255, 255, 255, 0.2)",
+                height: "40px",
+                background: "#22ff49cc",
+                color: "white",
+                fontSize: "24px",
+                textAlign: "center",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                paddingLeft: "20px",
+                paddingRight: "20px",
+                borderRadius: "10px",
+                marginTop: "10px",
               }}
-            ></div>
+            >
+              Employee Management
+            </div>
             <Menu theme="dark" mode="inline" items={menuItems} />
           </Sider>
 
-          <Layout style={{ marginLeft: 220 }}>
+          <Layout style={{ marginLeft: 280 }}>
             <Content
               style={{
-                margin: "20px",
-                padding: "20px",
+                margin: "40px",
+                padding: "5px",
                 background: "#fff",
               }}
             >

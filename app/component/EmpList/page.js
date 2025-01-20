@@ -22,9 +22,9 @@ const EmployeeList = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
-        Employee List
-      </h1>
+      <h2 style={{ textAlign: "left", marginBottom: "20px", color:'gray' }}>
+        {`Total ${employees?.length} employees`}
+      </h2>
       <table
         style={{
           width: "100%",

@@ -33,7 +33,17 @@ export const getEmployeesAssign = async (setter, setLoading) => {
   }
 };
 
-
+export const getEmpSalaryLanding = async (setter, setLoading) =>{
+  try {
+    setLoading(true);
+    const response = await axios.get(`${API_BASE_URL}/Employee/employeeSalaryLanding`);
+    setter(response.data);
+    setLoading(false);
+  } catch (error) {
+    toast.warn("Error fetching employees");
+    setLoading(false);
+  }
+}
 
 export const getEmployeeById = async (id, setter, setLoading) => {
   try {
@@ -47,9 +57,10 @@ export const getEmployeeById = async (id, setter, setLoading) => {
       lastname: response.data.lastName,
       department: response.data.departmentId,
       designation: response.data.designationId,
-      dateOfJoining: response.data.dateOfJoining !== "0001-01-01T00:00:00"
-        ? moment(response.data.dateOfJoining)
-        : null,
+      dateOfJoining:
+        response.data.dateOfJoining !== "0001-01-01T00:00:00"
+          ? moment(response.data.dateOfJoining)
+          : null,
       grossSalary: response.data.grossSalary || 0,
     };
 
@@ -60,7 +71,6 @@ export const getEmployeeById = async (id, setter, setLoading) => {
     setLoading(false);
   }
 };
-
 
 export const createEmployee = async (payload, setLoading, cb) => {
   try {
@@ -78,25 +88,34 @@ export const createEmployee = async (payload, setLoading, cb) => {
 export const createEmpSalary = async (payload, setLoading) => {
   try {
     setLoading(true);
-    const res = await axios.post(`${API_BASE_URL}/Employee/addEmployeeSalary`, payload);
+    const res = await axios.post(
+      `${API_BASE_URL}/Employee/addEmployeeSalary`,
+      payload
+    );
     toast.success("Employee salary created successfully");
     setLoading(false);
   } catch (error) {
-    toast.warn("Employee salary creation failed");
+    toast.warn(
+      error?.response?.data?.message || "Employee salary creation failed"
+    );
+    setLoading(false);
   }
-}
+};
 
 export const salaryAssignSaveandUpdate = async (payload, setLoading, cb) => {
   try {
     setLoading(true);
-    const res = await axios.post(`${API_BASE_URL}/Employee/assignSalary`, payload);
-    cb?.()
+    const res = await axios.post(
+      `${API_BASE_URL}/Employee/assignSalary`,
+      payload
+    );
+    cb?.();
     toast.success("Employee salary assigned successfully");
     setLoading(false);
   } catch (error) {
     toast.warn("Employee salary assign failed");
   }
-}
+};
 
 export const updateEmployee = async (payload, setLoading, cb, id) => {
   try {
