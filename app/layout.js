@@ -1,31 +1,40 @@
 "use client";
-import React, { useEffect, Suspense } from "react";
-import { Layout, Menu } from "antd";
+import React, { Suspense, useEffect } from "react";
+import { Layout, Menu, Button, Spin } from "antd";
 import { useRouter } from "next/navigation";
+import { useSelector, useDispatch, Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   HomeOutlined,
   UnorderedListOutlined,
-  PlusOutlined,
   TeamOutlined,
   AppstoreAddOutlined,
 } from "@ant-design/icons";
+import { login, logout, store } from "./redux/store";
 
-const { Sider, Content } = Layout;
+const { Header, Sider, Content } = Layout;
 
-export default function RootLayout({ children }) {
+function RootLayout({ children }) {
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   useEffect(() => {
-    router.prefetch("/");
-    router.prefetch("/component/EmpList");
-    router.prefetch("/component/EmpCreate");
-    router.prefetch("/component/EmpBulk");
-    router.prefetch("/component/DepCreate");
-    router.prefetch("/component/DegCreate");
-    router.prefetch("/component/EmpSalary");
-  }, [router]);
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      dispatch(login());
+    } else {
+      router.push("/Login");
+    }
+  }, [dispatch, router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    dispatch(logout());
+    router.push("/Login");
+  };
 
   const menuItems = [
     {
@@ -68,7 +77,6 @@ export default function RootLayout({ children }) {
         },
       ],
     },
-
     {
       key: "3",
       icon: <TeamOutlined />,
@@ -112,39 +120,71 @@ export default function RootLayout({ children }) {
     },
   ];
 
+  if (isAuthenticated === null) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <html lang="en">
-      <body style={{ margin: 0 }}>
+      <body>
         <Layout style={{ minHeight: "100vh" }}>
-          <Sider
-            width={"260!important"}
-            style={{
-              position: "fixed",
-              height: "100vh",
-              background: "#001529",
-            }}
-          >
-            <div
+          {isAuthenticated && (
+            <Sider
+              width={"200!important"}
               style={{
-                height: "40px",
-                background: "#22ff49cc",
-                color: "white",
-                fontSize: "24px",
-                textAlign: "center",
-                fontWeight: "bold",
-                marginBottom: "10px",
-                paddingLeft: "20px",
-                paddingRight: "20px",
-                borderRadius: "10px",
-                marginTop: "10px",
+                position: "fixed",
+                height: "100vh",
+                background: "#001529",
               }}
             >
-              Employee Management
-            </div>
-            <Menu theme="dark" mode="inline" items={menuItems} />
-          </Sider>
+              <div
+                style={{
+                  height: "40px",
+                }}
+              ></div>
+              <Menu theme="dark" mode="inline" items={menuItems} />
+            </Sider>
+          )}
 
-          <Layout style={{ marginLeft: 280 }}>
+          <Layout style={{ marginLeft: isAuthenticated ? 200 : 0 }}>
+            <Header
+              style={{
+                background: "#001529",
+                color: "#fff",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "0 20px",
+              }}
+            >
+              <div></div>
+              <div style={{ color: "#fff", fontSize: "18px" }}>
+                Welcome to Employee Management
+              </div>
+              {isAuthenticated ? (
+                <Button type="primary" onClick={handleLogout}>
+                  Logout
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  onClick={() => router.push("/Login")}
+                >
+                  Login
+                </Button>
+              )}
+            </Header>
             <Content
               style={{
                 margin: "40px",
@@ -159,5 +199,13 @@ export default function RootLayout({ children }) {
         </Layout>
       </body>
     </html>
+  );
+}
+
+export default function AppWrapper(props) {
+  return (
+    <Provider store={store}>
+      <RootLayout {...props} />
+    </Provider>
   );
 }

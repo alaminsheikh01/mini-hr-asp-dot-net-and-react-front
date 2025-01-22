@@ -4,6 +4,23 @@ import moment from "moment";
 
 const API_BASE_URL = "https://localhost:7245/api";
 
+// login
+export const loginAPI = async (payload, setLoading, cb) => {
+  try {
+    setLoading(true);
+    const response = await axios.post(`${API_BASE_URL}/Employee/signin`, payload
+    );
+    toast.success("Login successful");
+    cb?.(response?.data?.token);
+    setLoading(false);
+    return response.data;
+  }catch(error){
+    toast.warn("Login failed");
+    setLoading(false);
+    throw error;
+  }
+}
+
 // fetch all employees
 export const getEmployees = async (setter, setLoading) => {
   try {
