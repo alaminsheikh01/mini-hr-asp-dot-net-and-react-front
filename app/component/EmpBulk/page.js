@@ -90,7 +90,7 @@ const BulkAdd = () => {
     <div>
       {loading && <Loading3QuartersOutlined />}
       <ToastContainer position="top-right" autoClose={3000} />
-      <h1>Bulk Employee Upload</h1>
+      <h2 className="text-lg mb-5">Bulk Employee Upload</h2>
       <Upload
         accept=".xlsx, .xls"
         beforeUpload={() => false}

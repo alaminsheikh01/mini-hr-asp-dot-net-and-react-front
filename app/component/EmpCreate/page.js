@@ -113,7 +113,7 @@ const EmployeeCreate = () => {
 
   return (
     <div style={{ padding: "10px", fontFamily: "Arial, sans-serif" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
         <button
           onClick={() => router.back()}
           style={{

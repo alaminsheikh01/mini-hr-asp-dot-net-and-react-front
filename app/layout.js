@@ -12,6 +12,7 @@ import {
   AppstoreAddOutlined,
 } from "@ant-design/icons";
 import { login, logout, store } from "./redux/store";
+import "./globals.css";
 
 const { Header, Sider, Content } = Layout;
 
@@ -141,7 +142,7 @@ function RootLayout({ children }) {
         <Layout style={{ minHeight: "100vh" }}>
           {isAuthenticated && (
             <Sider
-              width={"200!important"}
+              width={"250px"}
               style={{
                 position: "fixed",
                 height: "100vh",
@@ -157,9 +158,13 @@ function RootLayout({ children }) {
             </Sider>
           )}
 
-          <Layout style={{ marginLeft: isAuthenticated ? 200 : 0 }}>
+          <Layout style={{ marginLeft: isAuthenticated ? 250 : 0 }}>
             <Header
               style={{
+                position: "fixed",
+                top: 0, 
+                zIndex: 1000,
+                width: isAuthenticated ? "calc(100% - 250px)" : "100%",
                 background: "#001529",
                 color: "#fff",
                 display: "flex",
@@ -177,18 +182,16 @@ function RootLayout({ children }) {
                   Logout
                 </Button>
               ) : (
-                <Button
-                  type="primary"
-                  onClick={() => router.push("/Login")}
-                >
+                <Button type="primary" onClick={() => router.push("/Login")}>
                   Login
                 </Button>
               )}
             </Header>
             <Content
               style={{
-                margin: "40px",
-                padding: "5px",
+                marginTop: 70,
+                marginLeft: isAuthenticated ? 10 : 0,
+                padding: "20px",
                 background: "#fff",
               }}
             >
