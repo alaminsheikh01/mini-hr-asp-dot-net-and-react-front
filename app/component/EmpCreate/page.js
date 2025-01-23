@@ -76,6 +76,7 @@ const EmployeeCreate = () => {
   }, [employeeId]);
 
   const handleSubmit = (values) => {
+    const payloadList = [];
     const payload = {
       FirstName: values.firstname,
       LastName: values.lastname,
@@ -97,6 +98,7 @@ const EmployeeCreate = () => {
         : null,
       GrossSalary: values.grossSalary,
     };
+    payloadList.push(payload);
     if (employeeId) {
       updateEmployee(
         payload,
@@ -105,7 +107,7 @@ const EmployeeCreate = () => {
         employeeId
       );
     } else {
-      createEmployee(payload, setLoading, () =>
+      createEmployee(payloadList, setLoading, () =>
         router.push("/component/EmpList")
       );
     }
@@ -113,7 +115,14 @@ const EmployeeCreate = () => {
 
   return (
     <div style={{ padding: "10px", fontFamily: "Arial, sans-serif" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          marginBottom: "20px",
+        }}
+      >
         <button
           onClick={() => router.back()}
           style={{

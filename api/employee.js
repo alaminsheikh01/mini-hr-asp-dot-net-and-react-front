@@ -11,7 +11,7 @@ export const loginAPI = async (payload, setLoading, cb) => {
     const response = await axios.post(`${API_BASE_URL}/Employee/signin`, payload
     );
     toast.success("Login successful");
-    cb?.(response?.data?.token);
+    cb?.(response?.data);
     setLoading(false);
     return response.data;
   }catch(error){
@@ -93,11 +93,12 @@ export const createEmployee = async (payload, setLoading, cb) => {
   try {
     setLoading(true);
     const res = await axios.post(`${API_BASE_URL}/Employee`, payload);
-    toast.success("Employee created successfully");
+    toast.success(res.data.message || "Employee created successfully");
     cb?.();
     setLoading(false);
   } catch (error) {
-    toast.warn("Employee creation failed");
+    setLoading(false)
+    toast.warn(error?.response?.data?.message || "Employee creation failed");
   }
 };
 

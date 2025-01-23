@@ -1,13 +1,14 @@
 "use client";
-import { getEmployees } from "@/api/employee";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Table, Button } from "antd";
 import { useRouter } from "next/navigation";
 import { EditOutlined } from "@ant-design/icons";
+import { getEmployees } from "@/api/employee";
+import './style.css'
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const router = useRouter();
 
   useEffect(() => {
@@ -18,95 +19,92 @@ const EmployeeList = () => {
     router.push(`/component/EmpCreate?id=${employeeId}`);
   };
 
-  if (loading) return <p>Loading employees...</p>;
+  const columns = [
+    {
+      title: "SL",
+      render: (_, __, index) => index + 1,
+      key: "index",
+      width: 50,
+    },
+    {
+      title: "First Name",
+      dataIndex: "firstName",
+      key: "firstName",
+    },
+    {
+      title: "Last Name",
+      dataIndex: "lastName",
+      key: "lastName",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Department",
+      dataIndex: "departmentName",
+      key: "departmentName",
+    },
+    {
+      title: "Designation",
+      dataIndex: "designationName",
+      key: "designationName",
+    },
+    {
+      title: "Phone",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <EditOutlined
+          title="Edit Employee"
+          style={{ color: "#007BFF", cursor: "pointer" }}
+          onClick={() => handleEdit(record.employeeId)}
+        />
+      ),
+    },
+  ];
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h2 style={{ textAlign: "left", marginBottom: "20px", color:'gray' }}>
-        {`Total ${employees?.length} employees`}
-      </h2>
-      <table
+      <div
         style={{
-          width: "100%",
-          borderCollapse: "collapse",
+          display: "flex",
+          justifyContent: "space-between",
           marginBottom: "20px",
         }}
       >
-        <thead>
-          <tr style={{ backgroundColor: "#f4f4f4", textAlign: "left" }}>
-            <th style={{ border: "1px solid #ddd", padding: "8px" }}>SL</th>
-            <th style={{ border: "1px solid #ddd", padding: "8px" }}>
-              First Name
-            </th>
-            <th style={{ border: "1px solid #ddd", padding: "8px" }}>
-              Last Name
-            </th>
-            <th style={{ border: "1px solid #ddd", padding: "8px" }}>Email</th>
-            <th style={{ border: "1px solid #ddd", padding: "8px" }}>
-              Department
-            </th>
-            <th style={{ border: "1px solid #ddd", padding: "8px" }}>
-              Designation
-            </th>
-            <th style={{ border: "1px solid #ddd", padding: "8px" }}>
-              Address
-            </th>
-            <th style={{ border: "1px solid #ddd", padding: "8px" }}>City</th>
-            <th style={{ border: "1px solid #ddd", padding: "8px" }}>Phone</th>
-            <th style={{ border: "1px solid #ddd", padding: "8px" }}>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employees.map((employee, index) => (
-            <tr
-              key={index}
-              style={{
-                backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#ffffff",
-              }}
-            >
-              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                {index + 1}
-              </td>
-              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                {employee.firstName}
-              </td>
-              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                {employee.lastName}
-              </td>
-              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                {employee.email}
-              </td>
-              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                {employee.departmentName}
-              </td>
-              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                {employee.designationName}
-              </td>
-              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                {employee.address}
-              </td>
-              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                {employee.city}
-              </td>
-              <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                {employee.phoneNumber}
-              </td>
-              <td
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "8px",
-                  textAlign: "center",
-                }}
-              >
-                <EditOutlined
-                  style={{ cursor: "pointer", color: "#007BFF" }}
-                  onClick={() => handleEdit(employee.employeeId)}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <h2 style={{ color: "gray" }}>
+          {`Total ${employees.length} Employees`}
+        </h2>
+        <Button
+          type="primary"
+          onClick={() => router.push("/component/EmpCreate")}
+        >
+          Add Employee
+        </Button>
+      </div>
+      <Table
+        columns={columns}
+        dataSource={employees}
+        rowKey="employeeId"
+        bordered
+        loading={loading}
+        scroll={{ x: 1300, y: 400 }}
+        pagination={{
+          pageSize: 10,
+        }}
+        className="custom-scrollbar"
+        style={{
+          borderRadius: "8px",
+          overflow: "hidden",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        }}
+      />
     </div>
   );
 };

@@ -1,15 +1,29 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
-// Create an authentication slice
+const token = localStorage.getItem("authToken");
+const isMasterUser = localStorage.getItem("isMasterUser") === "true";
+const user = JSON.parse(localStorage.getItem("user")) || {};
+
 const authSlice = createSlice({
   name: "auth",
-  initialState: { isAuthenticated: false },
+  initialState: {
+    isAuthenticated: !!token,
+    isMasterUser: isMasterUser || false,
+    userName: user.userName || "",
+    email: user.email || "",
+  },
   reducers: {
-    login(state) {
+    login(state, action) {
       state.isAuthenticated = true;
+      state.isMasterUser = action.payload.isMasterUser;
+      state.userName = action.payload.userName;
+      state.email = action.payload.email;
     },
     logout(state) {
       state.isAuthenticated = false;
+      state.isMasterUser = false;
+      state.userName = "";
+      state.email = "";
     },
   },
 });

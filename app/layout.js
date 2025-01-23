@@ -1,6 +1,6 @@
 "use client";
 import React, { Suspense, useEffect } from "react";
-import { Layout, Menu, Button, Spin } from "antd";
+import { Layout, Button, Spin, Menu, Dropdown, Avatar } from "antd";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch, Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
@@ -10,8 +10,12 @@ import {
   UnorderedListOutlined,
   TeamOutlined,
   AppstoreAddOutlined,
+  UserOutlined,
+  DownOutlined,
+  KeyOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
-import { login, logout, store } from "./redux/store";
+import { logout, store } from "./redux/store";
 import "./globals.css";
 
 const { Header, Sider, Content } = Layout;
@@ -19,23 +23,62 @@ const { Header, Sider, Content } = Layout;
 function RootLayout({ children }) {
   const router = useRouter();
   const dispatch = useDispatch();
-
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const { isAuthenticated, isMasterUser, userName, email, role } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    if (token) {
-      dispatch(login());
-    } else {
+    if (!token) {
       router.push("/Login");
     }
-  }, [dispatch, router]);
+  }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("isMasterUser");
+    localStorage.removeItem("user");
     dispatch(logout());
     router.push("/Login");
   };
+
+  const profileMenu = (
+    <Menu style={{ width: 220, padding: "10px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          paddingBottom: "10px",
+        }}
+      >
+        <Avatar size={48} icon={<UserOutlined />} />
+        <div style={{ fontWeight: "bold", marginTop: "8px" }}>{userName}</div>
+        <div style={{ color: "gray", fontSize: "12px" }}>{email}</div>
+        <div style={{ color: "gray", fontSize: "12px" }}>{`Role: ${isMasterUser ? "Admin" : "Employee"}`}</div>
+      </div>
+      <Menu.Divider />
+      <Menu.Item
+        key="2"
+        icon={<LogoutOutlined />}
+        onClick={handleLogout}
+        style={{ padding: "12px" }}
+      >
+        Log Out
+      </Menu.Item>
+      <Menu.Divider />
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: "12px",
+          color: "gray",
+          marginTop: "8px",
+        }}
+      >
+        SmartDesk@2025
+      </div>
+    </Menu>
+  );
 
   const menuItems = [
     {
@@ -60,7 +103,7 @@ function RootLayout({ children }) {
             router.push("/component/EmpList");
           },
         },
-        {
+        isMasterUser && {
           key: "sub2",
           label: "Create Employee",
           onClick: () => {
@@ -101,7 +144,8 @@ function RootLayout({ children }) {
         },
       ],
     },
-    {
+
+    isMasterUser && {
       key: "4",
       icon: <AppstoreAddOutlined />,
       label: "Create Department",
@@ -162,7 +206,7 @@ function RootLayout({ children }) {
             <Header
               style={{
                 position: "fixed",
-                top: 0, 
+                top: 0,
                 zIndex: 1000,
                 width: isAuthenticated ? "calc(100% - 250px)" : "100%",
                 background: "#001529",
@@ -178,13 +222,19 @@ function RootLayout({ children }) {
                 Welcome to Employee Management
               </div>
               {isAuthenticated ? (
-                <Button type="primary" onClick={handleLogout}>
-                  Logout
-                </Button>
+                <Dropdown
+                  overlay={profileMenu}
+                  placement="bottomRight"
+                  trigger={["click"]}
+                >
+                  <Avatar
+                    size="large"
+                    icon={<UserOutlined />}
+                    style={{ cursor: "pointer" }}
+                  />
+                </Dropdown>
               ) : (
-                <Button type="primary" onClick={() => router.push("/Login")}>
-                  Login
-                </Button>
+                <div></div>
               )}
             </Header>
             <Content

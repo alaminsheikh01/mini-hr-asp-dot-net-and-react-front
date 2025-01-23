@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Typography } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
@@ -14,20 +14,38 @@ const Login = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    document.title = "Login SmartDesk";
+  }, []);
+
   const handleLogin = async (values) => {
     const payload = {
       email: values.email || "",
       password: values.password || "",
     };
-    loginAPI(
-      payload,
-      setLoading,
-      (token) => {
-        localStorage.setItem("authToken", token);
-        dispatch(login()); 
+
+    try {
+      await loginAPI(payload, setLoading, (data) => {
+        // Save to localStorage
+        localStorage.setItem("authToken", data?.token);
+        localStorage.setItem("isMasterUser", data?.user?.isMasterUser);
+        localStorage.setItem("user", JSON.stringify(data?.user));
+
+        // Dispatch to Redux
+        dispatch(
+          login({
+            isMasterUser: data?.user?.isMasterUser,
+            userName: data?.user?.userName,
+            email: data?.user?.email,
+          })
+        );
+
+        // Navigate to home page
         router.push("/");
-      },
-    );
+      });
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
   return (
@@ -50,9 +68,14 @@ const Login = () => {
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <Title level={3} style={{ textAlign: "center" }}>
-          Login
+        <Title level={1} style={{ textAlign: "center" }}>
+          SmartDesk
         </Title>
+        <div className="text-center mb-5 text-gray-400">
+          <span>
+          Experience the next level of HR management in simple way.
+          </span>
+        </div>
         <Form
           name="login_form"
           onFinish={handleLogin}
@@ -97,6 +120,9 @@ const Login = () => {
               Login
             </Button>
           </Form.Item>
+          <div className="text-sm text-gray-300 text-center">
+            If you have forgotten your email, please contact the administrator.
+          </div>
         </Form>
       </div>
     </div>
