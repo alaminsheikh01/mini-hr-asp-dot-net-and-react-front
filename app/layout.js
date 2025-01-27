@@ -163,6 +163,15 @@ function RootLayout({ children }) {
         router.push("/component/DegCreate");
       },
     },
+    {
+      key: "6",
+      icon: <TeamOutlined />,
+      label: "Loan & Financial Aid",
+      onClick: () => {
+        document.title = "Loan & Financial Aid - Employee Management";
+        router.push("/component/Loan");
+      },
+    },
   ];
 
   if (isAuthenticated === null) {

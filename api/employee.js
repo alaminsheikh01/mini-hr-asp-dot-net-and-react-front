@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import moment from "moment";
 
-const API_BASE_URL = "https://localhost:7245/api";
+const API_BASE_URL = "https://localhost:7250/api";
 
 // login
 export const loginAPI = async (payload, setLoading, cb) => {
@@ -201,3 +201,38 @@ export const getDesignations = async (setter, setLoading) => {
     toast.warn("Error fetching designations");
   }
 };
+
+
+export const getLoanLanding = async (Id = 0, setter, setLoading) => {
+  try {
+    setLoading(true);
+    const res = await axios.get(`${API_BASE_URL}/Employee/loanLanding?EmployeeId=${Id}`);
+    console.log("res", res);
+    setter(res.data);
+    setLoading(false);
+  } catch (error) {
+    setLoading(false);
+    toast.warn("Error fetching loan landing data");
+  }
+}
+
+export const deleteLoan = async (id) => {
+  try {
+    const res = await axios.put(`${API_BASE_URL}/Employee/loanDelete?LoanId=${id}`);
+    return res.data;
+  } catch (error) {
+    toast.warn("Error deleting loan");
+  }
+}
+
+export const createLoan = async (payload, setLoading) => {
+  try {
+    setLoading(true);
+    const res = await axios.post(`${API_BASE_URL}/Employee/loanCreate`, payload);
+    toast.success("Loan created successfully");
+    setLoading(false);
+  } catch (error) {
+    toast.warn("Error creating loan");
+    setLoading(false);
+  }
+}
