@@ -207,7 +207,7 @@ function RootLayout({ children }) {
                   height: "40px",
                 }}
               ></div>
-              <Menu theme="dark" mode="inline" items={menuItems} />
+              <Menu theme="dark" mode="inline" style={{marginTop:'17px'}} items={menuItems} />
             </Sider>
           )}
 

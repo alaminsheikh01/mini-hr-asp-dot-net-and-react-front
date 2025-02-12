@@ -65,6 +65,7 @@ const EmployeeList = () => {
           style={{ color: "#007BFF", cursor: "pointer" }}
           onClick={() => handleEdit(record.employeeId)}
         />
+        
       ),
     },
   ];
