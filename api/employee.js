@@ -74,6 +74,7 @@ export const getEmployeeById = async (id, setter, setLoading) => {
       lastname: response.data.lastName,
       department: response.data.departmentId,
       designation: response.data.designationId,
+      insuranceID: response.data.insuranceNumber,
       dateOfJoining:
         response.data.dateOfJoining !== "0001-01-01T00:00:00"
           ? moment(response.data.dateOfJoining)

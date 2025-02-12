@@ -14,7 +14,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
-const { Title } = Typography;
 
 const initialValues = {
   firstname: "",
@@ -36,23 +35,14 @@ const initialValues = {
 const validationSchema = Yup.object({
   firstname: Yup.string().required("First Name is required"),
   lastname: Yup.string().required("Last Name is required"),
-  employeeID: Yup.string().required("Employee ID is required"),
-  gender: Yup.string().required("Gender is required").nullable(),
-  insuranceID: Yup.string(),
-  department: Yup.string().required("Please select a department").nullable(),
-  designation: Yup.string().required("Please select a designation").nullable(),
+  // department: Yup.string().required("Please select a department").nullable(),
+  // designation: Yup.string().required("Please select a designation").nullable(),
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
   phoneNumber: Yup.string()
     .matches(/^\d+$/, "Phone number must be digits only")
     .required("Phone number is required"),
-  dateOfBirth: Yup.date().required("Date of Birth is required"),
-  employeeStatus: Yup.string()
-    .required("Employee Status is required")
-    .nullable(),
-  address: Yup.string(),
-  dateOfJoining: Yup.date(),
 });
 
 const EmployeeCreate = () => {
@@ -78,11 +68,12 @@ const EmployeeCreate = () => {
   const handleSubmit = (values) => {
     const payloadList = [];
     const payload = {
-      FirstName: values.firstname,
-      LastName: values.lastname,
-      EmployeeID: values.employeeID,
-      Gender: values.gender,
-      InsuranceID: values.insuranceID,
+      firstName: values.firstname,
+      lastName: values.lastname,
+      employeeID: values.employeeID,
+      gender: values.gender,
+      grade: values.grade || 0,
+      insuranceNumber: values.insuranceID,
       DepartmentId: values.department,
       DesignationId: values.designation,
       Email: values.email,
@@ -90,13 +81,13 @@ const EmployeeCreate = () => {
       DateOfBirth: values.dateOfBirth
         ? values.dateOfBirth.format("YYYY-MM-DD")
         : null,
-      EmployeeStatus: values.employeeStatus,
+      employeeStatus: values.employeeStatus,
       EmployeeType: values.employeeType,
       Address: values.address,
       DateOfJoining: values.dateOfJoining
         ? values.dateOfJoining.format("YYYY-MM-DD")
         : null,
-      GrossSalary: values.grossSalary,
+      tinNumber: values.tinNumber || 0,
     };
     payloadList.push(payload);
     if (employeeId) {
@@ -156,7 +147,7 @@ const EmployeeCreate = () => {
             }}
           >
             <Row gutter={[16, 16]}>
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="firstname" style={{ fontWeight: "bold" }}>
                     First Name:
@@ -174,7 +165,7 @@ const EmployeeCreate = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="lastname" style={{ fontWeight: "bold" }}>
                     Last Name:
@@ -191,7 +182,7 @@ const EmployeeCreate = () => {
                   />
                 </div>
               </Col>
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="employeeID" style={{ fontWeight: "bold" }}>
                     Employee ID:
@@ -209,7 +200,7 @@ const EmployeeCreate = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="department" style={{ fontWeight: "bold" }}>
                     Department:
@@ -244,7 +235,7 @@ const EmployeeCreate = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="designation" style={{ fontWeight: "bold" }}>
                     Designation:
@@ -279,7 +270,7 @@ const EmployeeCreate = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="email" style={{ fontWeight: "bold" }}>
                     Email:
@@ -296,7 +287,7 @@ const EmployeeCreate = () => {
                   />
                 </div>
               </Col>
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="gender" style={{ fontWeight: "bold" }}>
                     Gender:
@@ -324,7 +315,7 @@ const EmployeeCreate = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="phoneNumber" style={{ fontWeight: "bold" }}>
                     Phone Number:
@@ -342,7 +333,7 @@ const EmployeeCreate = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="address" style={{ fontWeight: "bold" }}>
                     Address:
@@ -360,7 +351,7 @@ const EmployeeCreate = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="dateOfJoining" style={{ fontWeight: "bold" }}>
                     Date of Joining:
@@ -385,7 +376,7 @@ const EmployeeCreate = () => {
                 </div>
               </Col>
 
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label
                     htmlFor="employeeStatus"
@@ -417,7 +408,41 @@ const EmployeeCreate = () => {
                   />
                 </div>
               </Col>
-              <Col span={12}>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="grade" style={{ fontWeight: "bold" }}>
+                    Employee Grade:
+                  </label>
+                  <Field name="grade">
+                    {({ field }) => (
+                      <Select
+                        {...field}
+                        placeholder="Select Employee Grade"
+                        style={{ width: "100%" }}
+                        value={field.value}
+                        onChange={(value, op) => setFieldValue("grade", value)}
+                      >
+                        <Option value="1">1</Option>
+                        <Option value="2">2</Option>
+                        <Option value="3">3</Option>
+                        <Option value="4">4</Option>
+                        <Option value="5">5</Option>
+                        <Option value="6">6</Option>
+                        <Option value="7">7</Option>
+                        <Option value="8">8</Option>
+                        <Option value="9">9</Option>
+                        <Option value="10">10</Option>
+                      </Select>
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="employeeStatus"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="insuranceID" style={{ fontWeight: "bold" }}>
                     Insurance ID:
@@ -434,8 +459,25 @@ const EmployeeCreate = () => {
                   />
                 </div>
               </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="tinNumber" style={{ fontWeight: "bold" }}>
+                    TIN Number:
+                  </label>
+                  <Field name="tinNumber">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter TIN Number" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="tinNumber"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
 
-              <Col span={12}>
+              <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="dateOfBirth" style={{ fontWeight: "bold" }}>
                     Date of Birth:
@@ -464,7 +506,7 @@ const EmployeeCreate = () => {
                 type="primary"
                 htmlType="submit"
                 loading={loading}
-                style={{ marginTop: "20px" }}
+                style={{ marginTop: "0px" }}
               >
                 {loading
                   ? "Loading..."
