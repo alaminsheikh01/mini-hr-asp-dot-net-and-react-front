@@ -1,20 +1,27 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Table, Button } from "antd";
+import { Table, Button, Modal } from "antd";
 import { getEmpSalaryLanding } from "@/api/employee";
 import { EyeOutlined, PrinterOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { jsPDF } from "jspdf";
 import Payslip from "./Payslip";
+import PayslipView from "./PayslipView";
 
 const LandingPage = () => {
   const router = useRouter();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   useEffect(() => {
     getEmpSalaryLanding(setData, setLoading);
   }, []);
+
+  const handleView = (record) => {
+    setModalVisible(true);
+    setSelectedEmployee(record);
+  };
 
   const handlePrint = (data) => {
     Payslip(data);
@@ -65,7 +72,7 @@ const LandingPage = () => {
               cursor: "pointer",
               marginRight: 10,
             }}
-            onClick={() => console.log("View icon clicked", record)}
+            onClick={() => handleView(record)}
           />
           <PrinterOutlined
             title="Print"
@@ -102,6 +109,15 @@ const LandingPage = () => {
         rowKey="employeeSalaryId"
         bordered
       />
+      <Modal
+        title="Payslip Details"
+        open={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={null}
+        width={800}
+      >
+        <PayslipView employee={selectedEmployee} />
+      </Modal>
     </div>
   );
 };

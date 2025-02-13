@@ -1,0 +1,60 @@
+.payslip-container {
+    width: 700px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid black;
+    font-family: Arial, sans-serif;
+  }
+  
+  .payslip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .left-logo, .right-logo {
+    width: 80px;
+    height: auto;
+  }
+  
+  .payslip-title {
+    text-align: center;
+    text-decoration: underline;
+  }
+  
+  .payslip-month {
+    text-align: center;
+  }
+  
+  .employee-details, .salary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  .employee-details td, .salary-table th, .salary-table td {
+    border: 1px solid black;
+    padding: 5px;
+    text-align: left;
+  }
+  
+  .salary-table th {
+    background: #f0f0f0;
+  }
+  
+  .bold-row {
+    font-weight: bold;
+  }
+  
+  .payslip-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+  }
+  
+  .footer-signatures {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
