@@ -1,8 +1,11 @@
 "use client";
-import { getEmployeesAssign, salaryAssignSaveandUpdate } from "@/api/employee";
+import {
+  getEmployeesAssign,
+  getSalaryAssignById,
+  salaryAssignSaveandUpdate,
+} from "@/api/employee";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Drawer, Divider, Input } from "antd";
+import { Drawer, Divider, Input, Button } from "antd";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -14,40 +17,50 @@ const EmployeeList = () => {
   useEffect(() => {
     getEmployeesAssign(setEmployees, setLoading);
   }, []);
-
+console.log("selectedEmployee",selectedEmployee)
   const showDrawer = (employee) => {
-    setSelectedEmployee(employee);
-    setBasicSalary(Math.min(employee.grossSalary * 0.45, 10000));
+    const calculatedSalary = calculateSalaryComponents(
+      employee.basicSalary || 0,
+      employee.carAllowance || 0,
+      employee.ccCharge || 0,
+      employee.grade || 0,
+      employee.loanRepayment || 0,
+      employee.advanceSalary || 0
+    );
+
+    setSelectedEmployee({ ...employee, ...calculatedSalary });
     setDrawerVisible(true);
+    employee?.salaryAssignId &&
+      getSalaryAssignById(
+        employee.salaryAssignId,
+        setSelectedEmployee,
+        setLoading
+      );
+  };
+
+  const handleSalaryChange = (field, value) => {
+    if (value < 0) value = 0; // Prevent negative values
+
+    const updatedSalary = calculateSalaryComponents(
+      field === "basicSalary" ? value : selectedEmployee.basicSalary,
+      field === "carAllowance" ? value : selectedEmployee.carAllowance,
+      field === "ccCharge" ? value : selectedEmployee.ccCharge,
+      selectedEmployee.grade || 0,
+      field === "loanRepayment" ? value : selectedEmployee.loanRepayment,
+      field === "advanceSalary" ? value : selectedEmployee.advanceSalary
+    );
+
+    setSelectedEmployee((prev) => ({
+      ...prev,
+      [field]: value,
+      ...updatedSalary,
+    }));
   };
 
   const closeDrawer = () => {
     setDrawerVisible(false);
     setSelectedEmployee(null);
     setBasicSalary(0);
-  };
-
-  const calculateSalaryDetails = (basicSalary) => {
-    const houseRent = basicSalary * 0.1;
-    const medicalAllowance = basicSalary * 0.0352; // Medical Allowance is 3.52% of Basic
-    const conveyance = basicSalary * 0.03; // Conveyance is 3% of Basic
-    const totalSalary = basicSalary + houseRent + medicalAllowance + conveyance;
-
-    return { houseRent, medicalAllowance, conveyance, totalSalary };
-  };
-
-  const handleBasicSalaryChange = (newBasicSalary) => {
-    const { houseRent, medicalAllowance, conveyance, totalSalary } =
-      calculateSalaryDetails(newBasicSalary);
-
-    setSelectedEmployee((prevEmployee) => ({
-      ...prevEmployee,
-      basicSalary: +newBasicSalary || 0,
-      houseRent: +houseRent.toFixed(3),
-      medicalAllowance: +medicalAllowance.toFixed(3),
-      conveyance: +conveyance.toFixed(3),
-      totalSalary: +totalSalary.toFixed(3),
-    }));
   };
 
   if (loading) return <p>Loading employees...</p>;
@@ -154,184 +167,185 @@ const EmployeeList = () => {
         </tbody>
       </table>
       <Drawer
-        title={`Employee Salary Details`}
-        placement="right"
+        title="Employee Salary Details"
         onClose={closeDrawer}
         open={drawerVisible}
         width={600}
       >
-        {selectedEmployee && (
-          <div>
-            <div
-              style={{
-                marginTop: "0px",
-                background: "#f4f4f4",
-                padding: "8px",
-                borderRadius: "8px",
-                marginBottom: "5px",
-                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                  marginBottom: "10px",
-                  color: "#333",
-                }}
-              >
-                {selectedEmployee.firstName} {selectedEmployee.lastName}
-              </h3>
-              <p
-                style={{
-                  fontSize: "16px",
-                  color: "#666",
-                }}
-              >
-                <strong>Department:</strong> {selectedEmployee.departmentName}
-              </p>
-              <p
-                style={{
-                  fontSize: "16px",
-                  color: "#666",
-                }}
-              >
-                <strong>Designation:</strong> {selectedEmployee.designationName}
-              </p>
-            </div>
+        <div>
+          <h3>
+          <strong>Employee Name: </strong>  {selectedEmployee?.firstName} {selectedEmployee?.lastName} {selectedEmployee?.employeeName}
+          </h3>
+          <p>
+            <strong>Department:</strong> {selectedEmployee?.departmentName}
+          </p>
+          <p>
+            <strong>Designation:</strong> {selectedEmployee?.designationName}
+          </p>
+          <p>
+            <strong>Grade:</strong> {selectedEmployee?.grade}
+          </p>
 
-            <Divider>Salary Breakdown</Divider>
+          <Divider>Salary Breakdown</Divider>
 
-            {/* Basic Salary Input */}
-            <div style={{ marginBottom: "5px" }}>
-              <label>
-                <strong>Basic Salary:</strong>
-              </label>
-              <Input
-                type="number"
-                value={selectedEmployee.basicSalary || 0}
-                onChange={(e) => {
-                  const newBasicSalary = parseFloat(e.target.value) || 0;
-                  handleBasicSalaryChange(newBasicSalary);
-                }}
-                style={{ width: "100%", marginTop: "5px" }}
-              />
-            </div>
+          {/* Basic Salary Input */}
+          <label>
+            <strong>Basic Salary:</strong>
+          </label>
+          <Input
+            type="number"
+            value={selectedEmployee?.basicSalary}
+            onChange={(e) =>
+              handleSalaryChange("basicSalary", parseFloat(e.target.value) || 0)
+            }
+          />
 
-            {/* Calculated Values */}
-            {selectedEmployee.basicSalary > 0 &&
-              (() => {
-                const { houseRent, medicalAllowance, conveyance, totalSalary } =
-                  calculateSalaryDetails(selectedEmployee.basicSalary);
+          {/* Car Allowance Input */}
+          <label>
+            <strong>Car Allowance:</strong>
+          </label>
+          <Input
+            type="number"
+            value={selectedEmployee?.carAllowance}
+            onChange={(e) =>
+              handleSalaryChange(
+                "carAllowance",
+                parseFloat(e.target.value) || 0
+              )
+            }
+          />
 
-                return (
-                  <div>
-                    {/* House Rent */}
-                    <div style={{ marginBottom: "10px" }}>
-                      <label>
-                        <strong>House Rent (10% of Basic):</strong>
-                      </label>
-                      <Input
-                        type="number"
-                        value={houseRent.toFixed(2)}
-                        disabled
-                        style={{ width: "100%", marginTop: "5px" }}
-                      />
-                    </div>
+          {/* CC Charge Input */}
+          <label>
+            <strong>CC Charge:</strong>
+          </label>
+          <Input
+            type="number"
+            value={selectedEmployee?.ccCharge}
+            onChange={(e) =>
+              handleSalaryChange("ccCharge", parseFloat(e.target.value) || 0)
+            }
+          />
 
-                    {/* Medical Allowance */}
-                    <div style={{ marginBottom: "10px" }}>
-                      <label>
-                        <strong>Medical Allowance (3.52% of Basic):</strong>
-                      </label>
-                      <Input
-                        type="number"
-                        value={medicalAllowance.toFixed(2)}
-                        disabled
-                        style={{ width: "100%", marginTop: "5px" }}
-                      />
-                    </div>
+          <Divider>Auto-Calculated Fields</Divider>
 
-                    {/* Conveyance */}
-                    <div style={{ marginBottom: "10px" }}>
-                      <label>
-                        <strong>Conveyance (3% of Basic):</strong>
-                      </label>
-                      <Input
-                        type="number"
-                        value={conveyance.toFixed(2)}
-                        disabled
-                        style={{ width: "100%", marginTop: "5px" }}
-                      />
-                    </div>
+          {/* Auto-Calculated Medical Allowance */}
+          <label>
+            <strong>Medical Allowance (Auto):</strong>
+          </label>
+          <Input
+            type="number"
+            value={selectedEmployee?.medicalAllowance}
+            disabled
+          />
 
-                    {/* Total Salary */}
-                    <div
-                      style={{
-                        marginBottom: "10px",
-                        textAlign: "right",
-                        display: "flex",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <label style={{ fontWeight: "bold" }}>
-                        Total Salary:
-                      </label>
-                      <p
-                        style={{
-                          fontSize: "16px",
-                          fontWeight: "bold",
-                          marginTop: "5px",
-                          color: "#333",
-                        }}
-                      >
-                        {totalSalary.toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })()}
-            {/* Save Button */}
-            <div
-              style={{
-                marginTop: "20px",
-                textAlign: "right",
-              }}
-            >
-              <button
-                style={{
-                  backgroundColor: "#1890ff",
-                  color: "white",
-                  border: "none",
-                  padding: "10px 20px",
-                  fontSize: "16px",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-                }}
-                onClick={() => {
-                  const payload = {
-                    id: selectedEmployee.salaryAssignId || 0,
-                    employeeId: selectedEmployee.employeeId,
-                    basicSalary: selectedEmployee.basicSalary,
-                    houseRent: selectedEmployee.houseRent,
-                    medicalAllowance: selectedEmployee.medicalAllowance,
-                    conveyance: selectedEmployee.conveyance,
-                    grossSalary: selectedEmployee.totalSalary,
-                    status: true,
-                  };
+          {/* Auto-Calculated Transport Allowance */}
+          <label>
+            <strong>Transport/Convenience (Auto):</strong>
+          </label>
+          <Input type="number" value={selectedEmployee?.conveyance} disabled />
 
-                  salaryAssignSaveandUpdate(payload, setLoading, () => {
-                    getEmployeesAssign(setEmployees, setLoading);
-                    closeDrawer();
-                  });
-                }}
-              >
-                {selectedEmployee?.salaryAssignId ? "Re-Assign" : "Assign"}
-              </button>
-            </div>
+          <Divider>
+            <strong>Gross Salary:</strong> {selectedEmployee?.grossSalary}
+          </Divider>
+
+          <Divider>Deductions</Divider>
+
+          {/* Loan Repayment & Lunch Deduction Section */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <label>
+              <strong>Lunch Deduction:</strong> 1350
+            </label>
+            <label>
+              <strong>Loan Repayment (Last Month Displayed):</strong>{" "}
+              {selectedEmployee?.lastMonthLoanPayment}
+            </label>
           </div>
-        )}
+
+          {/* Loan Repayment Input */}
+          <label>
+            <strong>Loan Repayment (This Month):</strong>
+          </label>
+          <Input
+            type="number"
+            value={selectedEmployee?.loanRepayment}
+            onChange={(e) =>
+              handleSalaryChange(
+                "loanRepayment",
+                parseFloat(e.target.value) || 0
+              )
+            }
+          />
+
+          {/* Advance Salary Input */}
+          <label>
+            <strong>Advance Salary:</strong>
+          </label>
+          <Input
+            type="number"
+            value={selectedEmployee?.advanceSalary}
+            onChange={(e) =>
+              handleSalaryChange(
+                "advanceSalary",
+                parseFloat(e.target.value) || 0
+              )
+            }
+          />
+
+          {/* Auto-Calculated Provident Fund */}
+          <label>
+            <strong>Provident Fund (10% of Basic - Auto):</strong>
+          </label>
+          <Input type="number" value={selectedEmployee?.pf} disabled />
+
+          <Divider>
+            <strong>Total Deductions:</strong>{" "}
+            {selectedEmployee?.totalDeductions}
+          </Divider>
+          <Divider>
+            <strong>Net Salary:</strong> {selectedEmployee?.netSalary}
+          </Divider>
+
+          {/* Save Button */}
+          <Button
+            type="primary"
+            style={{ width: "100%", marginTop: "10px" }}
+            onClick={() => {
+              const payload = {
+                id: selectedEmployee.salaryAssignId || 0,
+                employeeId: selectedEmployee.employeeId || 0,
+                salaryAssignId: selectedEmployee.salaryAssignId || 0,
+                basicSalary: +selectedEmployee.basicSalary || 0,
+                grossSalary: +selectedEmployee.grossSalary || 0,
+                carAllowance: +selectedEmployee.carAllowance || 0,
+                ccCharge: +selectedEmployee.ccCharge || 0,
+                medicalAllowance: +selectedEmployee.medicalAllowance || 0,
+                conveyance: +selectedEmployee.conveyance || 0,
+                pf: +selectedEmployee.pf || 0,
+                lunchDeduction: +selectedEmployee.lunchDeduction || 0,
+                loanRepayment: +selectedEmployee.loanRepayment || 0,
+                lastMonthLoanPayment:
+                  +selectedEmployee.lastMonthLoanPayment || 0,
+                advanceSalary: +selectedEmployee.advanceSalary || 0,
+                totalDeductions: +selectedEmployee.totalDeductions || 0,
+                netSalary: +selectedEmployee.netSalary || 0,
+                status: true,
+              };
+              salaryAssignSaveandUpdate(payload, setLoading, () => {
+                getEmployeesAssign(setEmployees, setLoading);
+                closeDrawer();
+              });
+            }}
+          >
+            {selectedEmployee?.salaryAssignId ? "Re-Assign" : "Assign"}
+          </Button>
+        </div>
       </Drawer>
       ;
     </div>
@@ -339,3 +353,54 @@ const EmployeeList = () => {
 };
 
 export default EmployeeList;
+
+const calculateSalaryComponents = (
+  basicSalary,
+  carAllowance = 0,
+  ccCharge = 0,
+  grade = 0,
+  loanRepayment = 0,
+  advanceSalary = 0,
+  lastMonthLoanPayment = 0 // Display only, not deducted again
+) => {
+  basicSalary = basicSalary || 0;
+
+  // ✅ Medical Allowance Calculation
+  const medicalAllowance =
+    grade >= 8 && grade <= 15
+      ? basicSalary * 0.05 // 5% for grade 8-15
+      : basicSalary < 10000
+      ? basicSalary * 0.1 // 10% if grade is 3-7 and salary < 10,000
+      : 0;
+
+  // ✅ Transport/Convenience Allowance (5% of Basic)
+  const conveyance = basicSalary * 0.05;
+
+  // ✅ Gross Salary Calculation
+  const grossSalary =
+    basicSalary + carAllowance + medicalAllowance + conveyance + ccCharge;
+
+  // ✅ Deductions Calculation
+  const pf = basicSalary * 0.1; // Provident Fund (10% of Basic)
+  const lunchDeduction = 1350; // Fixed Lunch Deduction
+  const totalDeductions = pf + lunchDeduction + loanRepayment + advanceSalary;
+
+  // ✅ Net Salary Calculation
+  const netSalary = grossSalary - totalDeductions;
+
+  return {
+    basicSalary,
+    carAllowance,
+    ccCharge,
+    medicalAllowance: medicalAllowance.toFixed(2),
+    conveyance: conveyance.toFixed(2),
+    grossSalary: grossSalary.toFixed(2),
+    pf: pf.toFixed(2),
+    lunchDeduction,
+    loanRepayment,
+    lastMonthLoanPayment, // Display only
+    advanceSalary,
+    totalDeductions: totalDeductions.toFixed(2),
+    netSalary: netSalary.toFixed(2),
+  };
+};

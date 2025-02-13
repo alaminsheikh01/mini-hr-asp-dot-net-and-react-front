@@ -78,8 +78,8 @@ const EmployeeCreate = () => {
       DesignationId: values.designation,
       Email: values.email,
       PhoneNumber: values.phoneNumber,
-      DateOfBirth: values.dateOfBirth
-        ? values.dateOfBirth.format("YYYY-MM-DD")
+      DateOfBirth: values?.dateOfBirth
+        ? values?.dateOfBirth.format("YYYY-MM-DD")
         : null,
       employeeStatus: values.employeeStatus,
       EmployeeType: values.employeeType,

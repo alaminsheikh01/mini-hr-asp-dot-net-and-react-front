@@ -8,18 +8,20 @@ const API_BASE_URL = "https://localhost:7250/api";
 export const loginAPI = async (payload, setLoading, cb) => {
   try {
     setLoading(true);
-    const response = await axios.post(`${API_BASE_URL}/Employee/signin`, payload
+    const response = await axios.post(
+      `${API_BASE_URL}/Employee/signin`,
+      payload
     );
     toast.success("Login successful");
     cb?.(response?.data);
     setLoading(false);
     return response.data;
-  }catch(error){
+  } catch (error) {
     toast.warn("Login failed");
     setLoading(false);
     throw error;
   }
-}
+};
 
 // fetch all employees
 export const getEmployees = async (setter, setLoading) => {
@@ -50,17 +52,33 @@ export const getEmployeesAssign = async (setter, setLoading) => {
   }
 };
 
-export const getEmpSalaryLanding = async (setter, setLoading) =>{
+export const getSalaryAssignById = (id, setter, setLoading) => {
   try {
     setLoading(true);
-    const response = await axios.get(`${API_BASE_URL}/Employee/employeeSalaryLanding`);
+    axios.get(`${API_BASE_URL}/Employee/salaryAssignById?SalaryAssignId=${id}`).then((res) => {
+      const data = res.data;
+      setter(data);
+      setLoading(false);
+    });
+  } catch (error) {
+    toast.warn("Error fetching employee");
+    setLoading(false);
+  }
+}
+
+export const getEmpSalaryLanding = async (setter, setLoading) => {
+  try {
+    setLoading(true);
+    const response = await axios.get(
+      `${API_BASE_URL}/Employee/employeeSalaryLanding`
+    );
     setter(response.data);
     setLoading(false);
   } catch (error) {
     toast.warn("Error fetching employees");
     setLoading(false);
   }
-}
+};
 
 export const getEmployeeById = async (id, setter, setLoading) => {
   try {
@@ -79,6 +97,9 @@ export const getEmployeeById = async (id, setter, setLoading) => {
         response.data.dateOfJoining !== "0001-01-01T00:00:00"
           ? moment(response.data.dateOfJoining)
           : null,
+      dateOfBirth:  response.data.dateOfBirth !== "0001-01-01T00:00:00"
+      ? moment(response.data.dateOfBirth)
+      : null,
       grossSalary: response.data.grossSalary || 0,
     };
 
@@ -98,7 +119,7 @@ export const createEmployee = async (payload, setLoading, cb) => {
     cb?.();
     setLoading(false);
   } catch (error) {
-    setLoading(false)
+    setLoading(false);
     toast.warn(error?.response?.data?.message || "Employee creation failed");
   }
 };
@@ -203,11 +224,12 @@ export const getDesignations = async (setter, setLoading) => {
   }
 };
 
-
 export const getLoanLanding = async (Id = 0, setter, setLoading) => {
   try {
     setLoading(true);
-    const res = await axios.get(`${API_BASE_URL}/Employee/loanLanding?EmployeeId=${Id}`);
+    const res = await axios.get(
+      `${API_BASE_URL}/Employee/loanLanding?EmployeeId=${Id}`
+    );
     console.log("res", res);
     setter(res.data);
     setLoading(false);
@@ -215,25 +237,30 @@ export const getLoanLanding = async (Id = 0, setter, setLoading) => {
     setLoading(false);
     toast.warn("Error fetching loan landing data");
   }
-}
+};
 
 export const deleteLoan = async (id) => {
   try {
-    const res = await axios.put(`${API_BASE_URL}/Employee/loanDelete?LoanId=${id}`);
+    const res = await axios.put(
+      `${API_BASE_URL}/Employee/loanDelete?LoanId=${id}`
+    );
     return res.data;
   } catch (error) {
     toast.warn("Error deleting loan");
   }
-}
+};
 
 export const createLoan = async (payload, setLoading) => {
   try {
     setLoading(true);
-    const res = await axios.post(`${API_BASE_URL}/Employee/loanCreate`, payload);
+    const res = await axios.post(
+      `${API_BASE_URL}/Employee/loanCreate`,
+      payload
+    );
     toast.success("Loan created successfully");
     setLoading(false);
   } catch (error) {
     toast.warn("Error creating loan");
     setLoading(false);
   }
-}
+};
