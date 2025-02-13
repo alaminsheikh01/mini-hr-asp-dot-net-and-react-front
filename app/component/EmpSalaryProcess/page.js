@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button } from "antd";
 import { getEmpSalaryLanding } from "@/api/employee";
-import { EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined, PrinterOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { jsPDF } from "jspdf";
+import Payslip from "./Payslip";
 
 const LandingPage = () => {
   const router = useRouter();
@@ -14,11 +16,16 @@ const LandingPage = () => {
     getEmpSalaryLanding(setData, setLoading);
   }, []);
 
+  const handlePrint = (data) => {
+    Payslip(data);
+  };
+
   const columns = [
     {
-      title: "Employee SalaryID",
+      title: "Salary ID",
       dataIndex: "employeeSalaryId",
       key: "employeeSalaryId",
+      width: 100,
     },
     {
       title: "Employee Name",
@@ -49,11 +56,23 @@ const LandingPage = () => {
       title: "Action",
       key: "action",
       render: (text, record) => (
-        <EyeOutlined
-          title="View Details"
-          style={{ fontSize: "16px", color: "#1890ff", cursor: "pointer" }}
-          onClick={() => console.log("View icon clicked", record)}
-        />
+        <>
+          <EyeOutlined
+            title="View Details"
+            style={{
+              fontSize: "16px",
+              color: "#1890ff",
+              cursor: "pointer",
+              marginRight: 10,
+            }}
+            onClick={() => console.log("View icon clicked", record)}
+          />
+          <PrinterOutlined
+            title="Print"
+            style={{ fontSize: "16px", color: "#1890ff", cursor: "pointer" }}
+            onClick={() => handlePrint(record)}
+          />
+        </>
       ),
     },
   ];

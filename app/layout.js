@@ -136,7 +136,7 @@ function RootLayout({ children }) {
         },
         {
           key: "sub5",
-          label: "Employee Salary Process",
+          label: "Salary Process & Payslip",
           onClick: () => {
             document.title = "Salary Process - Employee Management";
             router.push("/component/EmpSalaryProcess");
