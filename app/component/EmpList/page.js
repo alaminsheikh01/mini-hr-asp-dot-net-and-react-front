@@ -160,6 +160,9 @@ const EmployeeList = () => {
                   {employee.lastName}
                 </p>
                 <p>
+                  <strong>Employee Code</strong> <br /> {employee.employeeCode}
+                </p>
+                <p>
                   <strong>Email</strong> <br /> {employee.email}
                 </p>
                 <p>
@@ -193,7 +196,7 @@ const EmployeeList = () => {
                   <strong>Gender</strong> <br /> {employee.gender}
                 </p>
                 <p>
-                  <strong>EmployeeStatus</strong> <br />{" "}
+                  <strong>Employee Status</strong> <br />{" "}
                   {employee.employeeStatus}
                 </p>
               </div>

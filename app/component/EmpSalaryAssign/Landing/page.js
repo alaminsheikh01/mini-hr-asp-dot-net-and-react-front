@@ -12,12 +12,11 @@ const EmployeeList = () => {
   const [loading, setLoading] = useState(true);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [basicSalary, setBasicSalary] = useState(0); // State to store the basic salary input
+  const [basicSalary, setBasicSalary] = useState(0);
 
   useEffect(() => {
     getEmployeesAssign(setEmployees, setLoading);
   }, []);
-console.log("selectedEmployee",selectedEmployee)
   const showDrawer = (employee) => {
     const calculatedSalary = calculateSalaryComponents(
       employee.basicSalary || 0,
@@ -25,7 +24,12 @@ console.log("selectedEmployee",selectedEmployee)
       employee.ccCharge || 0,
       employee.grade || 0,
       employee.loanRepayment || 0,
-      employee.advanceSalary || 0
+      employee.lunchDeduction || 1350,
+      employee.advanceSalary || 0,
+      employee.incomeTax || 0,
+      employee.performanceBonus || 0,
+      employee.festivalBonus || 0,
+      employee.lastMonthLoanPayment || 0
     );
 
     setSelectedEmployee({ ...employee, ...calculatedSalary });
@@ -37,7 +41,6 @@ console.log("selectedEmployee",selectedEmployee)
         setLoading
       );
   };
-
   const handleSalaryChange = (field, value) => {
     if (value < 0) value = 0; // Prevent negative values
 
@@ -47,7 +50,11 @@ console.log("selectedEmployee",selectedEmployee)
       field === "ccCharge" ? value : selectedEmployee.ccCharge,
       selectedEmployee.grade || 0,
       field === "loanRepayment" ? value : selectedEmployee.loanRepayment,
-      field === "advanceSalary" ? value : selectedEmployee.advanceSalary
+      field === "lunchDeduction" ? value : selectedEmployee.lunchDeduction,
+      field === "advanceSalary" ? value : selectedEmployee.advanceSalary,
+      field === "incomeTax" ? value : selectedEmployee.incomeTax,
+      field === "performanceBonus" ? value : selectedEmployee.performanceBonus,
+      field === "festivalBonus" ? value : selectedEmployee.festivalBonus
     );
 
     setSelectedEmployee((prev) => ({
@@ -174,7 +181,8 @@ console.log("selectedEmployee",selectedEmployee)
       >
         <div>
           <h3>
-          <strong>Employee Name: </strong>  {selectedEmployee?.firstName} {selectedEmployee?.lastName} {selectedEmployee?.employeeName}
+            <strong>Employee Name: </strong> {selectedEmployee?.firstName}{" "}
+            {selectedEmployee?.lastName} {selectedEmployee?.employeeName}
           </h3>
           <p>
             <strong>Department:</strong> {selectedEmployee?.departmentName}
@@ -197,6 +205,19 @@ console.log("selectedEmployee",selectedEmployee)
             value={selectedEmployee?.basicSalary}
             onChange={(e) =>
               handleSalaryChange("basicSalary", parseFloat(e.target.value) || 0)
+            }
+          />
+
+          {/* House Rent */}
+          <label>
+            <strong>House Rent:</strong>
+          </label>
+          <Input
+            disabled={true}
+            type="number"
+            value={selectedEmployee?.houseRent}
+            onChange={(e) =>
+              handleSalaryChange("houseRent", parseFloat(e.target.value) || 0)
             }
           />
 
@@ -224,6 +245,35 @@ console.log("selectedEmployee",selectedEmployee)
             value={selectedEmployee?.ccCharge}
             onChange={(e) =>
               handleSalaryChange("ccCharge", parseFloat(e.target.value) || 0)
+            }
+          />
+
+          {/* Performance Bonus */}
+          <label>
+            <strong>Performance Bonus:</strong>
+          </label>
+          <Input
+            type="number"
+            value={selectedEmployee?.performanceBonus}
+            onChange={(e) =>
+              handleSalaryChange(
+                "performanceBonus",
+                parseFloat(e.target.value) || 0
+              )
+            }
+          />
+          {/* Festival Bonus */}
+          <label>
+            <strong>Festival Bonus:</strong>
+          </label>
+          <Input
+            type="number"
+            value={selectedEmployee?.festivalBonus}
+            onChange={(e) =>
+              handleSalaryChange(
+                "festivalBonus",
+                parseFloat(e.target.value) || 0
+              )
             }
           />
 
@@ -259,14 +309,37 @@ console.log("selectedEmployee",selectedEmployee)
               width: "100%",
             }}
           >
-            <label>
-              <strong>Lunch Deduction:</strong> 1350
-            </label>
+            <label>{/* <strong>Lunch Deduction:</strong> 1350 */}</label>
             <label>
               <strong>Loan Repayment (Last Month Displayed):</strong>{" "}
               {selectedEmployee?.lastMonthLoanPayment}
             </label>
           </div>
+
+          <label>
+            <strong>Lunch Deduction:</strong>
+          </label>
+          <Input
+            type="number"
+            value={selectedEmployee?.lunchDeduction}
+            onChange={(e) =>
+              handleSalaryChange(
+                "lunchDeduction",
+                parseFloat(e.target.value) || 0
+              )
+            }
+          />
+          {/* Income Tax */}
+          <label>
+            <strong>Income Tax:</strong>
+          </label>
+          <Input
+            type="number"
+            value={selectedEmployee?.incomeTax}
+            onChange={(e) =>
+              handleSalaryChange("incomeTax", parseFloat(e.target.value) || 0)
+            }
+          />
 
           {/* Loan Repayment Input */}
           <label>
@@ -325,7 +398,11 @@ console.log("selectedEmployee",selectedEmployee)
                 grossSalary: +selectedEmployee.grossSalary || 0,
                 carAllowance: +selectedEmployee.carAllowance || 0,
                 ccCharge: +selectedEmployee.ccCharge || 0,
+                incomeTax: +selectedEmployee.incomeTax || 0,
+                performanceBonus: +selectedEmployee.performanceBonus || 0,
+                festivalBonus: +selectedEmployee.festivalBonus || 0,
                 medicalAllowance: +selectedEmployee.medicalAllowance || 0,
+                houseRent: +selectedEmployee.houseRent || 0,
                 conveyance: +selectedEmployee.conveyance || 0,
                 pf: +selectedEmployee.pf || 0,
                 lunchDeduction: +selectedEmployee.lunchDeduction || 0,
@@ -337,6 +414,7 @@ console.log("selectedEmployee",selectedEmployee)
                 netSalary: +selectedEmployee.netSalary || 0,
                 status: true,
               };
+              console.log("payload", payload);
               salaryAssignSaveandUpdate(payload, setLoading, () => {
                 getEmployeesAssign(setEmployees, setLoading);
                 closeDrawer();
@@ -360,30 +438,45 @@ const calculateSalaryComponents = (
   ccCharge = 0,
   grade = 0,
   loanRepayment = 0,
+  lunchDeduction = 1350,
   advanceSalary = 0,
-  lastMonthLoanPayment = 0 // Display only, not deducted again
+  incomeTax = 0,
+  performanceBonus = 0,
+  festivalBonus = 0,
+  lastMonthLoanPayment = 0
 ) => {
   basicSalary = basicSalary || 0;
 
   // ✅ Medical Allowance Calculation
-  const medicalAllowance =
+  let medicalAllowance =
     grade >= 8 && grade <= 15
       ? basicSalary * 0.05 // 5% for grade 8-15
-      : basicSalary < 10000
-      ? basicSalary * 0.1 // 10% if grade is 3-7 and salary < 10,000
-      : 0;
+      : grade >= 3 && grade <= 7
+      ? basicSalary * 0.1 // 10% if grade is 3-7
+      : basicSalary * 0.05; // Default to 5% if not in specified grades
+
+  // Ensure medical allowance does not exceed 10,000
+  medicalAllowance = medicalAllowance > 10000 ? 10000 : medicalAllowance;
 
   // ✅ Transport/Convenience Allowance (5% of Basic)
   const conveyance = basicSalary * 0.05;
+  // house rent should be 45% of basic salary
+  const houseRent = basicSalary * 0.45;
 
   // ✅ Gross Salary Calculation
   const grossSalary =
-    basicSalary + carAllowance + medicalAllowance + conveyance + ccCharge;
+    basicSalary +
+    carAllowance +
+    medicalAllowance +
+    conveyance +
+    ccCharge +
+    houseRent +
+    performanceBonus +
+    festivalBonus;
 
   // ✅ Deductions Calculation
   const pf = basicSalary * 0.1; // Provident Fund (10% of Basic)
-  const lunchDeduction = 1350; // Fixed Lunch Deduction
-  const totalDeductions = pf + lunchDeduction + loanRepayment + advanceSalary;
+  const totalDeductions = pf + lunchDeduction + loanRepayment + advanceSalary + incomeTax;
 
   // ✅ Net Salary Calculation
   const netSalary = grossSalary - totalDeductions;
@@ -402,5 +495,6 @@ const calculateSalaryComponents = (
     advanceSalary,
     totalDeductions: totalDeductions.toFixed(2),
     netSalary: netSalary.toFixed(2),
+    houseRent: houseRent.toFixed(2),
   };
 };

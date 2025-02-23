@@ -70,7 +70,7 @@ const EmployeeCreate = () => {
     const payload = {
       firstName: values.firstname,
       lastName: values.lastname,
-      employeeID: values.employeeID,
+      employeeCode: values.employeeCode || "",
       gender: values.gender,
       grade: values.grade || 0,
       insuranceNumber: values.insuranceID,
@@ -184,16 +184,16 @@ const EmployeeCreate = () => {
               </Col>
               <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
-                  <label htmlFor="employeeID" style={{ fontWeight: "bold" }}>
-                    Employee ID:
+                  <label htmlFor="employeeCode" style={{ fontWeight: "bold" }}>
+                    Employee Code:
                   </label>
-                  <Field name="employeeID">
+                  <Field name="employeeCode">
                     {({ field }) => (
-                      <Input {...field} placeholder="Enter Employee ID" />
+                      <Input {...field} placeholder="Enter Employee Code" />
                     )}
                   </Field>
                   <ErrorMessage
-                    name="employeeID"
+                    name="employeeCode"
                     component="div"
                     style={{ color: "red" }}
                   />
@@ -432,6 +432,11 @@ const EmployeeCreate = () => {
                         <Option value="8">8</Option>
                         <Option value="9">9</Option>
                         <Option value="10">10</Option>
+                        <Option value="11">11</Option>
+                        <Option value="12">12</Option>
+                        <Option value="13">13</Option>
+                        <Option value="14">14</Option>
+                        <Option value="15">15</Option>
                       </Select>
                     )}
                   </Field>

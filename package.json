@@ -24,6 +24,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.1",
     "react-toastify": "^11.0.2",
+    "recharts": "^2.15.1",
     "redux": "^5.0.1",
     "xlsx": "^0.18.5",
     "yup": "^1.6.1"
