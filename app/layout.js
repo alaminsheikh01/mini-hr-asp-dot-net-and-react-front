@@ -136,10 +136,18 @@ function RootLayout({ children }) {
         },
         {
           key: "sub5",
-          label: "Salary Process & Payslip",
+          label: "Salary Process",
           onClick: () => {
             document.title = "Salary Process - Employee Management";
             router.push("/component/EmpSalaryProcess");
+          },
+        },
+        {
+          key: "sub6",
+          label: "PaySlip",
+          onClick: () => {
+            document.title = "Salary PaySlip - Employee Management";
+            router.push("/component/PaySlip");
           },
         },
       ],

@@ -53,7 +53,7 @@ const PayslipView = ({ employee }) => {
             <td>Basic</td>
             <td>{employee.basicSalary}</td>
             <td>Income Tax</td>
-            <td>-</td>
+            <td>{employee.incomeTax}</td>
           </tr>
           <tr>
             <td>House Rent</td>

@@ -2,34 +2,36 @@
 import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Select, Button, Row, Col, Collapse } from "antd";
+import { Select, Button, Row, Col, Collapse, Table, Spin } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import {
   createEmpSalary,
   getDepartments,
   getDesignations,
-  getEmployees,
+  getSalaryAssignLanding,
 } from "@/api/employee";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const { Option } = Select;
 const { Panel } = Collapse;
 
 const EmployeeSalaryProcess = () => {
-    const router = useRouter();
+  const router = useRouter();
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
-  const [employees, setEmployees] = useState([]);
+  const [salaryAssignments, setSalaryAssignments] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     getDepartments(setDepartments, setLoading);
     getDesignations(setDesignations, setLoading);
-    getEmployees(setEmployees, setLoading);
+    getSalaryAssignLanding(setSalaryAssignments, setLoading); // Fetch salary assignments
   }, []);
 
   const initialValues = {
-    employeeId: "",
+    employeeIds: [],
     month: "",
     year: "",
     departmentId: "",
@@ -37,7 +39,6 @@ const EmployeeSalaryProcess = () => {
   };
 
   const validationSchema = Yup.object({
-    employeeId: Yup.string().required("Employee is required"),
     month: Yup.string().required("Month is required"),
     year: Yup.number()
       .typeError("Year must be a number")
@@ -45,20 +46,43 @@ const EmployeeSalaryProcess = () => {
   });
 
   const handleSubmit = (values, { resetForm }) => {
+    if(values.employeeIds.length === 0) {
+      return toast.warn("Please select at least one employee");
+    }
     const payload = {
-      employeeId: values.employeeId,
+      employeeIds: values.employeeIds,
       salaryMonth: values.month,
       salaryYear: +values.year,
-      departmentId: values.departmentId,
-      designationId: values.designationId,
+      departmentId: +values.departmentId || 0,
+      designationId: +values.designationId || 0,
     };
     createEmpSalary(payload, setLoading);
     resetForm();
   };
 
+  const columns = [
+    { title: "Employee ID", dataIndex: "employeeId", key: "employeeId" },
+    { title: "Employee Name", dataIndex: "employeeName", key: "employeeName" },
+    { title: "Department", dataIndex: "departmentName", key: "departmentName" },
+    {
+      title: "Designation",
+      dataIndex: "designationName",
+      key: "designationName",
+    },
+    { title: "Gross Salary", dataIndex: "grossSalary", key: "grossSalary" },
+    { title: "Net Salary", dataIndex: "netSalary", key: "netSalary" },
+  ];
+
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          marginBottom: "20px",
+        }}
+      >
         <button
           onClick={() => router.back()}
           style={{
@@ -77,7 +101,7 @@ const EmployeeSalaryProcess = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ setFieldValue }) => (
+        {({ setFieldValue, values, errors, touched, setTouched }) => (
           <Form
             style={{
               maxWidth: "1200px",
@@ -89,47 +113,8 @@ const EmployeeSalaryProcess = () => {
             }}
           >
             <Collapse defaultActiveKey={["1"]}>
-              <Panel header="Collapse" key="1">
+              <Panel header="Employee Salary Information" key="1">
                 <Row gutter={[16, 16]}>
-                  <Col span={6}>
-                    <div style={{ marginBottom: "15px" }}>
-                      <label
-                        htmlFor="employeeId"
-                        style={{ fontWeight: "bold" }}
-                      >
-                        Employee:
-                      </label>
-                      <Field name="employeeId">
-                        {({ field }) => (
-                          <Select
-                            {...field}
-                            placeholder="Select Employee"
-                            style={{ width: "100%" }}
-                            value={field.value}
-                            onChange={(value) =>
-                              setFieldValue("employeeId", value)
-                            }
-                          >
-                            {employees.map((employee) => (
-                              <Option
-                                key={employee.employeeId}
-                                value={employee.employeeId}
-                              >
-                                {employee.firstName} {employee.lastName}
-                              </Option>
-                            ))}
-                          </Select>
-                        )}
-                      </Field>
-                      <ErrorMessage
-                        name="employeeId"
-                        component="div"
-                        style={{ color: "red" }}
-                      />
-                    </div>
-                  </Col>
-
-                  {/* Month Selection */}
                   <Col span={6}>
                     <div style={{ marginBottom: "15px" }}>
                       <label htmlFor="month" style={{ fontWeight: "bold" }}>
@@ -172,7 +157,6 @@ const EmployeeSalaryProcess = () => {
                     </div>
                   </Col>
 
-                  {/* Year Selection */}
                   <Col span={6}>
                     <div style={{ marginBottom: "15px" }}>
                       <label htmlFor="year" style={{ fontWeight: "bold" }}>
@@ -204,92 +188,49 @@ const EmployeeSalaryProcess = () => {
                       />
                     </div>
                   </Col>
-
-                  {/* Department Selection */}
+                 
                   <Col span={6}>
-                    <div style={{ marginBottom: "15px" }}>
-                      <label
-                        htmlFor="departmentId"
-                        style={{ fontWeight: "bold" }}
+                    <div style={{ textAlign: "left", marginTop: "20px" }}>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        loading={loading}
                       >
-                        Department:
-                      </label>
-                      <Field name="departmentId">
-                        {({ field }) => (
-                          <Select
-                            {...field}
-                            placeholder="Select Department"
-                            style={{ width: "100%" }}
-                            onChange={(value) =>
-                              setFieldValue("departmentId", value)
-                            }
-                          >
-                            {departments.map((department) => (
-                              <Option
-                                key={department.value}
-                                value={department.value}
-                              >
-                                {department.label}
-                              </Option>
-                            ))}
-                          </Select>
-                        )}
-                      </Field>
-                      <ErrorMessage
-                        name="departmentId"
-                        component="div"
-                        style={{ color: "red" }}
-                      />
+                        Generate
+                      </Button>
                     </div>
-                  </Col>
-
-                  {/* Designation Selection */}
-                  <Col span={6}>
-                    <div style={{ marginBottom: "15px" }}>
-                      <label
-                        htmlFor="designationId"
-                        style={{ fontWeight: "bold" }}
-                      >
-                        Designation:
-                      </label>
-                      <Field name="designationId">
-                        {({ field }) => (
-                          <Select
-                            {...field}
-                            placeholder="Select Designation"
-                            style={{ width: "100%" }}
-                            onChange={(value) =>
-                              setFieldValue("designationId", value)
-                            }
-                          >
-                            {designations.map((designation) => (
-                              <Option
-                                key={designation.value}
-                                value={designation.value}
-                              >
-                                {designation.label}
-                              </Option>
-                            ))}
-                          </Select>
-                        )}
-                      </Field>
-                      <ErrorMessage
-                        name="designationId"
-                        component="div"
-                        style={{ color: "red" }}
-                      />
-                    </div>
-                  </Col>
-
-                  {/* Submit Button */}
-                  <Col span={6} style={{ marginTop: "20px" }}>
-                    <Button type="primary" htmlType="submit" loading={loading}>
-                      Generate
-                    </Button>
                   </Col>
                 </Row>
               </Panel>
             </Collapse>
+
+            {/* Employee Selection Error Message - Now Inside Formik */}
+            {touched.employeeIds && errors.employeeIds && (
+              <div style={{ color: "red", marginTop: "10px" }}>
+                {errors.employeeIds}
+              </div>
+            )}
+
+            <div style={{ marginTop: "30px" }}>
+              <h3>Salary Assignments</h3>
+              <Spin spinning={loading}>
+                <Table
+                  columns={columns}
+                  dataSource={salaryAssignments}
+                  rowKey="salaryAssignId"
+                  rowSelection={{
+                    selectedRowKeys: values.employeeIds, // ✅ Sync with Formik
+                    onChange: (selectedRowKeys) => {
+                      setFieldValue("employeeIds", selectedRowKeys);
+                      setTouched({ ...touched, employeeIds: true }); // ✅ Mark field as touched
+                    },
+                  }}
+                  pagination={{ pageSize: 10 }}
+                />
+              </Spin>
+            </div>
+
+            {/* Submit Button */}
           </Form>
         )}
       </Formik>

@@ -1,89 +1,48 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal } from "antd";
-import { getEmpSalaryLanding } from "@/api/employee";
-import { EyeOutlined, PrinterOutlined } from "@ant-design/icons";
+import { Table, Button, Modal, Badge, Tag } from "antd";
+import { getSalaryHeaderData } from "@/api/employee";
 import { useRouter } from "next/navigation";
-import Payslip from "./Payslip";
 import PayslipView from "./PayslipView";
 
 const LandingPage = () => {
   const router = useRouter();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   useEffect(() => {
-    getEmpSalaryLanding(setData, setLoading);
+    getSalaryHeaderData(setData, setLoading, "");
   }, []);
-
-  const handleView = (record) => {
-    setModalVisible(true);
-    setSelectedEmployee(record);
-  };
-
-  const handlePrint = (data) => {
-    Payslip(data);
-  };
 
   const columns = [
     {
-      title: "Salary ID",
-      dataIndex: "employeeSalaryId",
-      key: "employeeSalaryId",
-      width: 100,
+      title: "Salary Code",
+      dataIndex: "salaryCode",
+      key: "salaryCode",
+      width: 200,
     },
-    {
-      title: "Employee Name",
-      dataIndex: "employeeName",
-      key: "employeeName",
-    },
-    {
-      title: "Department",
-      dataIndex: "departmentName",
-      key: "departmentName",
-    },
-    {
-      title: "Designation",
-      dataIndex: "designationName",
-      key: "designationName",
-    },
+
     {
       title: "Month",
       dataIndex: "salaryMonth",
       key: "salaryMonth",
+      width: 300,
     },
     {
       title: "Year",
       dataIndex: "salaryYear",
       key: "salaryYear",
+      width: 300,
     },
     {
-      title: "Action",
-      key: "action",
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
       render: (text, record) => (
-        <>
-          <EyeOutlined
-            title="View Details"
-            style={{
-              fontSize: "16px",
-              color: "#1890ff",
-              cursor: "pointer",
-              marginRight: 10,
-            }}
-            onClick={() => handleView(record)}
-          />
-          <PrinterOutlined
-            title="Print"
-            style={{ fontSize: "16px", color: "#1890ff", cursor: "pointer" }}
-            onClick={() => handlePrint(record)}
-          />
-        </>
+        <Tag color="success">Salary Process Success</Tag>
       ),
     },
   ];
-
   return (
     <div style={{ padding: "20px" }}>
       {loading && <div>Loading...</div>}
@@ -104,20 +63,17 @@ const LandingPage = () => {
         </Button>
       </div>
       <Table
+      style={{ cursor: "pointer" }}
         columns={columns}
         dataSource={data}
-        rowKey="employeeSalaryId"
+        rowKey="salaryHeaderId"
         bordered
+        onRow={(record) => ({
+          onClick: () => {
+            router.push(`/component/EmpSalaryProcess/${record.salaryCode}`);
+          },
+        })}
       />
-      <Modal
-        title="Payslip Details"
-        open={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={null}
-        width={800}
-      >
-        <PayslipView employee={selectedEmployee} />
-      </Modal>
     </div>
   );
 };

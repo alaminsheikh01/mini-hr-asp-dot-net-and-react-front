@@ -55,27 +55,64 @@ export const getEmployeesAssign = async (setter, setLoading) => {
 export const getSalaryAssignById = (id, setter, setLoading) => {
   try {
     setLoading(true);
-    axios.get(`${API_BASE_URL}/Employee/salaryAssignById?SalaryAssignId=${id}`).then((res) => {
-      const data = res.data;
-      setter(data);
-      setLoading(false);
-    });
+    axios
+      .get(`${API_BASE_URL}/Employee/salaryAssignById?SalaryAssignId=${id}`)
+      .then((res) => {
+        const data = res.data;
+        setter(data);
+        setLoading(false);
+      });
   } catch (error) {
     toast.warn("Error fetching employee");
     setLoading(false);
   }
-}
+};
 
-export const getEmpSalaryLanding = async (setter, setLoading) => {
+export const getEmpSalaryLanding = async (setter, setLoading, Id) => {
   try {
     setLoading(true);
     const response = await axios.get(
-      `${API_BASE_URL}/Employee/employeeSalaryLanding`
+      `${API_BASE_URL}/Employee/employeeSalaryLanding?EmployeeId=${Id}`
     );
     setter(response.data);
     setLoading(false);
   } catch (error) {
-    toast.warn("Error fetching employees");
+    toast.warn(error?.response?.data?.message || "Error fetching employees");
+    setter([]);
+    setLoading(false);
+  }
+};
+
+export const getSalaryHeaderData = async (setter, setLoading, salaryCode) => {
+  try {
+    setLoading(true);
+    const response = await axios.get(
+      `${API_BASE_URL}/Employee/employeeSalaryHeader?salaryCode=${salaryCode}`
+    );
+    console.log("response", response);
+    setter(response.data);
+    setLoading(false);
+  } catch (error) {
+    toast.warn("Error fetching salary header data");
+    setLoading(false);
+  }
+};
+
+export const getDetailsBySalaryCode = async (
+  salaryCode,
+  setter,
+  setLoading
+) => {
+  try {
+    setLoading(true);
+    const response = await axios.get(
+      `${API_BASE_URL}/Employee/detailsBySalaryCode?salaryCode=${salaryCode}`
+    );
+    console.log("response", response);
+    setter(response.data);
+    setLoading(false);
+  } catch (error) {
+    toast.warn("Error fetching salary details");
     setLoading(false);
   }
 };
@@ -97,9 +134,10 @@ export const getEmployeeById = async (id, setter, setLoading) => {
         response.data.dateOfJoining !== "0001-01-01T00:00:00"
           ? moment(response.data.dateOfJoining)
           : null,
-      dateOfBirth:  response.data.dateOfBirth !== "0001-01-01T00:00:00"
-      ? moment(response.data.dateOfBirth)
-      : null,
+      dateOfBirth:
+        response.data.dateOfBirth !== "0001-01-01T00:00:00"
+          ? moment(response.data.dateOfBirth)
+          : null,
       grossSalary: response.data.grossSalary || 0,
     };
 
@@ -154,6 +192,18 @@ export const salaryAssignSaveandUpdate = async (payload, setLoading, cb) => {
     setLoading(false);
   } catch (error) {
     toast.warn("Employee salary assign failed");
+  }
+};
+
+export const getSalaryAssignLanding = async (setter, setLoading) => {
+  try {
+    setLoading(true);
+    const res = await axios.get(`${API_BASE_URL}/Employee/salaryAssignLanding`);
+    setter(res.data);
+    setLoading(false);
+  } catch (error) {
+    toast.warn("Error fetching salary assign landing");
+    setLoading(false);
   }
 };
 

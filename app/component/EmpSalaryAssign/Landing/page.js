@@ -414,7 +414,6 @@ const EmployeeList = () => {
                 netSalary: +selectedEmployee.netSalary || 0,
                 status: true,
               };
-              console.log("payload", payload);
               salaryAssignSaveandUpdate(payload, setLoading, () => {
                 getEmployeesAssign(setEmployees, setLoading);
                 closeDrawer();
