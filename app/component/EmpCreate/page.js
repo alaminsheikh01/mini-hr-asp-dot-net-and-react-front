@@ -12,6 +12,8 @@ import {
 import { Input, Select, Button, Typography, Row, Col, DatePicker } from "antd";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import { getDayjsDate } from "@/app/common/formatDate";
 
 const { Option } = Select;
 
@@ -59,7 +61,6 @@ const EmployeeCreate = () => {
   useEffect(() => {
     getDepartments(setDepartments, setLoading);
     getDesignations(setDesignations, setLoading);
-    // If editing, fetch employee data
     if (employeeId) {
       getEmployeeById(employeeId, setEmployee, setLoading);
     }
@@ -493,9 +494,17 @@ const EmployeeCreate = () => {
                         {...field}
                         style={{ width: "100%" }}
                         placeholder="Select Date of Birth"
-                        onChange={(value) =>
-                          setFieldValue("dateOfBirth", value)
-                        }
+                        value={field.value ? dayjs(field.value) : null} // ✅ Ensure it's a proper dayjs object
+                        onChange={(value) => {
+                          const formattedDate = value
+                            ? value.format("YYYY-MM-DD")
+                            : null;
+                          console.log(
+                            "Formatted DatePicker Value:",
+                            formattedDate
+                          );
+                          setFieldValue("dateOfBirth", formattedDate);
+                        }}
                       />
                     )}
                   </Field>

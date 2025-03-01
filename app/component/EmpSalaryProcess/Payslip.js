@@ -12,7 +12,6 @@ const PayslipGenerator = (employee) => {
     compress: true,
   });
 
-  // **Step 1: Add Images at the Top**
   doc.addImage(leftImage, "JPG", 15, 5, 50, 30); // Left Image
   doc.addImage(rightImage, "JPG", 140, 5, 50, 30); // Right Image
 
@@ -24,7 +23,11 @@ const PayslipGenerator = (employee) => {
   doc.text("Payslip", 90, 50);
 
   doc.setFontSize(12);
-  doc.text(`For Month of ${employee.salaryMonth} ${employee.salaryYear}`, 75, 58);
+  doc.text(
+    `For Month of ${employee.salaryMonth} ${employee.salaryYear}`,
+    75,
+    58
+  );
 
   // **Step 3: Adjust Employee Details Position**
   let yOffset = 65; // Start lower due to images
@@ -51,13 +54,43 @@ const PayslipGenerator = (employee) => {
     head: [["Particulars", "Amount", "Deductions", "Amount"]],
     body: [
       ["Basic", employee.basicSalary, "Income Tax", "-"],
-      ["House Rent", employee.houseRent || "-", "Lunch", employee.lunchDeduction || "-"],
-      ["Conveyance/Car Allowance", employee.conveyance, "Loan Repayment", employee.loanRepayment],
-      ["Medical Allowance", employee.medicalAllowance, "Loan Outstanding as of 26th Dec 2024", "-"],
+      [
+        "House Rent",
+        employee.houseRent || "-",
+        "Lunch",
+        employee.lunchDeduction || "-",
+      ],
+      [
+        "Conveyance/Car Allowance",
+        employee.conveyance,
+        "Loan Repayment",
+        employee.loanRepayment,
+      ],
+      [
+        "Medical Allowance",
+        employee.medicalAllowance,
+        "Loan Outstanding as of 26th Dec 2024",
+        "-",
+      ],
       ["Festival Bonus", employee.festivalBonus || "-", "PF", employee.pf],
-      ["Performance Bonus", employee.performanceBonus || "-", "Advance Salary", employee.advanceSalary],
-      ["Payment for extra duties", employee.extraDuties || "-", { content: "Total Deductions", styles: { fontStyle: "bold" } }, employee.totalDeductions],
-      [{ content: "Total Gross Salary", styles: { fontStyle: "bold" } }, employee.grossSalary, { content: "Net Salary", styles: { fontStyle: "bold" } }, employee.netSalary],
+      [
+        "Performance Bonus",
+        employee.performanceBonus || "-",
+        "Advance Salary",
+        employee.advanceSalary,
+      ],
+      [
+        "Payment for extra duties",
+        employee.extraDuties || "-",
+        { content: "Total Deductions", styles: { fontStyle: "bold" } },
+        employee.totalDeductions,
+      ],
+      [
+        { content: "Total Gross Salary", styles: { fontStyle: "bold" } },
+        employee.grossSalary,
+        { content: "Net Salary", styles: { fontStyle: "bold" } },
+        employee.netSalary,
+      ],
     ],
     theme: "grid",
     styles: { fontSize: 10, cellPadding: 3 },
@@ -67,9 +100,24 @@ const PayslipGenerator = (employee) => {
   // **Step 5: Adjust Footer Position**
   const finalY = doc.autoTable.previous.finalY + 30;
   doc.setFontSize(8);
-  doc.text("NB: System Generated copy, no signature required.", 105, finalY + 10, { align: "center" });
-  doc.text("This document remains the property of CDBL and the information contained herein is confidential.", 105, finalY + 15, { align: "center" });
-  doc.text("Persons receiving this document are responsible for restricting disclosure except as necessary for intended use.", 105, finalY + 20, { align: "center" });
+  doc.text(
+    "NB: System Generated copy, no signature required.",
+    105,
+    finalY + 10,
+    { align: "center" }
+  );
+  doc.text(
+    "This document remains the property of CDBL and the information contained herein is confidential.",
+    105,
+    finalY + 15,
+    { align: "center" }
+  );
+  doc.text(
+    "Persons receiving this document are responsible for restricting disclosure except as necessary for intended use.",
+    105,
+    finalY + 20,
+    { align: "center" }
+  );
 
   doc.text("Prepared By: Payroll Account", 15, finalY);
   doc.text("Approved By: GM - HRD", 150, finalY);

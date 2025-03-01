@@ -5,10 +5,12 @@ import { Table, Button, Upload, message } from "antd";
 import { Loading3QuartersOutlined, UploadOutlined } from "@ant-design/icons";
 import { toast, ToastContainer } from "react-toastify";
 import { createEmployee } from "@/api/employee";
+import { useRouter } from "next/navigation";
 
 const BulkAdd = () => {
   const [uploadedData, setUploadedData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleFileUpload = (info) => {
     const file = info.fileList?.[0].originFileObj;
@@ -24,25 +26,30 @@ const BulkAdd = () => {
 
       const excelDateToJSDate = (excelSerial) => {
         if (!excelSerial || isNaN(excelSerial)) return null;
-        const date = new Date((excelSerial - 25569) * 86400000); // Adjust for Excel epoch
-        return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+        const date = new Date((excelSerial - 25569) * 86400000);
+        return date.toISOString().split("T")[0];
       };
 
       const formattedData = parsedData.map((row) => ({
         ID: row["ID"] || "",
-        FirstName: row["First Name"] || "",
-        LastName: row["Last Name"] || "",
-        EmployeeID: String(row["Employee Id"]) || "",
-        Department: row["Department"] || "",
-        Designation: row["Designation"] || "",
-        Gender: row['Gender'] || "",
-        Grade: row["Grade"] || "",
-        InsuranceID: String(row["Insurance ID"]) || "",
-        Email: row["Email"] || "",
-        PhoneNumber: String(row["Phone Number"]) || "",
-        DateOfBirth: excelDateToJSDate(row["Date Of Birth"]),
-        Address: row["Address"] || "",
+        firstName: row["First Name"] || "",
+        lastName: row["Last Name"] || "",
+        employeeCode: String(row["Employee Code"]) || "",
+        departmentName: row["Department"] || "",
+        departmentId: 0,
+        designationName: row["Designation"] || "",
+        designationId: 0,
+        email: row["Email"] || "",
+        gender: row["Gender"] || "",
+        phoneNumber: String(row["Phone Number"]) || "",
+        address: row["Address"] || "",
         DateOfJoining: excelDateToJSDate(row["Date Of Joining"]),
+        employeeStatus: row["Employee Status"] || "",
+        grade: +row["Grade"] || 0,
+        dateOfBirth: excelDateToJSDate(row["Date Of Birth"]),
+        insuranceNumber: String(row["Insurance ID"]) || "",
+        tinNumber: +row["TIN Number"] || 0,
+        dateOfJoining: excelDateToJSDate(row["Date Of Birth"]),
       }));
 
       setUploadedData(formattedData);
@@ -52,75 +59,71 @@ const BulkAdd = () => {
     reader.readAsArrayBuffer(file);
   };
 
-
-  const handleSave = async () => {
+  const handleSave = () => {
     if (uploadedData.length === 0) {
       return toast.error("No data to save. Please upload a valid Excel file.");
     }
-
-    try {
-      await createEmployee(
-        uploadedData,
-        () => setLoading(false),
-        () => router.push("/component/EmpList")
-      );
-      toast.success("Employees saved successfully!");
-    } catch (error) {
-      toast.error("Failed to save employees");
-    }
+    createEmployee(uploadedData, setLoading, () =>
+      router.push("/component/EmpList")
+    );
   };
 
   const columns = [
     { title: "ID", dataIndex: "ID", key: "id", width: 80 },
     {
       title: "First Name",
-      dataIndex: "FirstName",
+      dataIndex: "firstName",
       key: "firstName",
       width: 120,
     },
-    { title: "Last Name", dataIndex: "LastName", key: "lastName", width: 120 },
+    { title: "Last Name", dataIndex: "lastName", key: "lastName", width: 120 },
     {
-      title: "Employee ID",
-      dataIndex: "EmployeeID",
+      title: "Employee Code",
+      dataIndex: "employeeCode",
       key: "employeeID",
       width: 150,
     },
     {
       title: "Department",
-      dataIndex: "Department",
+      dataIndex: "departmentName",
       key: "department",
       width: 120,
     },
     {
       title: "Designation",
-      dataIndex: "Designation",
+      dataIndex: "designationName",
       key: "designation",
       width: 120,
     },
     {
-      title: 'Gender',
-      dataIndex:'Gender',
-      key:'gender'
+      title: "Gender",
+      dataIndex: "gender",
+      key: "gender",
     },
-    { title: "Grade", dataIndex: "Grade", key: "grade", width: 120 },
+    { title: "Grade", dataIndex: "grade", key: "grade", width: 120 },
     {
       title: "Insurance ID",
-      dataIndex: "InsuranceID",
+      dataIndex: "insuranceNumber",
       key: "insuranceID",
       width: 150,
     },
-    { title: "Email", dataIndex: "Email", key: "email" },
-    { title: "Phone Number", dataIndex: "PhoneNumber", key: "phoneNumber", width: 180 },
+    { title: "Email", dataIndex: "email", key: "email" },
+    {
+      title: "Phone Number",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
+      width: 180,
+    },
     {
       title: "Date of Birth",
-      dataIndex: "DateOfBirth",
+      dataIndex: "dateOfBirth",
       key: "dateOfBirth",
       width: 180,
     },
-    { title: "Address", dataIndex: "Address", key: "address" },
+    { title: "Address", dataIndex: "address", key: "address" },
     {
       title: "Date of Joining",
-      dataIndex: "DateOfJoining",
+      dataIndex: "dateOfJoining",
       key: "dateOfJoining",
       width: 180,
     },

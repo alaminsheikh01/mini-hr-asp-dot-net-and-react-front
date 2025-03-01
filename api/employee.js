@@ -1,6 +1,8 @@
+import { formatDate } from "@/app/common/formatDate";
 import axios from "axios";
-import { toast } from "react-toastify";
+import dayjs from "dayjs";
 import moment from "moment";
+import { toast } from "react-toastify";
 
 const API_BASE_URL = "https://localhost:7250/api";
 
@@ -122,7 +124,6 @@ export const getEmployeeById = async (id, setter, setLoading) => {
     setLoading(true);
     const response = await axios.get(`${API_BASE_URL}/Employee/${id}`);
 
-    // Convert dateOfJoining to a valid Moment.js object or null
     const modifyData = {
       ...response.data,
       firstname: response.data.firstName,
@@ -130,14 +131,8 @@ export const getEmployeeById = async (id, setter, setLoading) => {
       department: response.data.departmentId,
       designation: response.data.designationId,
       insuranceID: response.data.insuranceNumber,
-      dateOfJoining:
-        response.data.dateOfJoining !== "0001-01-01T00:00:00"
-          ? moment(response.data.dateOfJoining)
-          : null,
-      dateOfBirth:
-        response.data.dateOfBirth !== "0001-01-01T00:00:00"
-          ? moment(response.data.dateOfBirth)
-          : null,
+      dateOfJoining: formatDate(response.data.dateOfJoining),
+      dateOfBirth: formatDate(response.data.dateOfBirth),
       grossSalary: response.data.grossSalary || 0,
     };
 
@@ -153,12 +148,17 @@ export const createEmployee = async (payload, setLoading, cb) => {
   try {
     setLoading(true);
     const res = await axios.post(`${API_BASE_URL}/Employee`, payload);
-    toast.success(res.data.message || "Employee created successfully");
-    cb?.();
-    setLoading(false);
+
+    if (res.status === 200 || res.status === 201) {
+      toast.success("Employee created successfully");
+      cb?.();
+    } else {
+      throw new Error("Unexpected response status");
+    }
   } catch (error) {
+    toast.warn("Employee creation failed");
+  } finally {
     setLoading(false);
-    toast.warn(error?.response?.data?.message || "Employee creation failed");
   }
 };
 
