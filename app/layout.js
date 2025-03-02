@@ -17,6 +17,7 @@ import {
 } from "@ant-design/icons";
 import { logout, store } from "./redux/store";
 import "./globals.css";
+import Chatbot from "./component/ChatBot";
 
 const { Header, Sider, Content } = Layout;
 
@@ -265,6 +266,7 @@ function RootLayout({ children }) {
               <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
               <ToastContainer />
             </Content>
+            <Chatbot />
           </Layout>
         </Layout>
       </body>
