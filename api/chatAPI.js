@@ -1,7 +1,7 @@
 import { hrData } from "@/app/utils/hr_data";
 import axios from "axios";
 
-const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+const API_KEY = "AIzaSyASXIKrnJwsrGp7UvDbyjlw0B8NLkSjFoo";
 
 export const getGeminiResponse = async (message) => {
   try {
