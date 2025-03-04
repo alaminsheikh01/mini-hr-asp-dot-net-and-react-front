@@ -13,7 +13,6 @@ import { Input, Select, Button, Typography, Row, Col, DatePicker } from "antd";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { getDayjsDate } from "@/app/common/formatDate";
 
 const { Option } = Select;
 
@@ -37,8 +36,6 @@ const initialValues = {
 const validationSchema = Yup.object({
   firstname: Yup.string().required("First Name is required"),
   lastname: Yup.string().required("Last Name is required"),
-  // department: Yup.string().required("Please select a department").nullable(),
-  // designation: Yup.string().required("Please select a designation").nullable(),
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
@@ -488,23 +485,16 @@ const EmployeeCreate = () => {
                   <label htmlFor="dateOfBirth" style={{ fontWeight: "bold" }}>
                     Date of Birth:
                   </label>
+
                   <Field name="dateOfBirth">
                     {({ field }) => (
                       <DatePicker
                         {...field}
                         style={{ width: "100%" }}
                         placeholder="Select Date of Birth"
-                        value={field.value ? dayjs(field.value) : null} // ✅ Ensure it's a proper dayjs object
-                        onChange={(value) => {
-                          const formattedDate = value
-                            ? value.format("YYYY-MM-DD")
-                            : null;
-                          console.log(
-                            "Formatted DatePicker Value:",
-                            formattedDate
-                          );
-                          setFieldValue("dateOfBirth", formattedDate);
-                        }}
+                        onChange={(value) =>
+                          setFieldValue("dateOfBirth", value)
+                        }
                       />
                     )}
                   </Field>
