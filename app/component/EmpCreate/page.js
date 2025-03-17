@@ -59,7 +59,7 @@ const EmployeeCreate = () => {
     getDepartments(setDepartments, setLoading);
     getDesignations(setDesignations, setLoading);
     if (employeeId) {
-      // getEmployeeById(employeeId, setEmployee, setLoading);
+      getEmployeeById(employeeId, setEmployee, setLoading);
     }
   }, [employeeId]);
 
@@ -355,14 +355,15 @@ const EmployeeCreate = () => {
                     Date of Joining:
                   </label>
                   <Field name="dateOfJoining">
-                    {({ field }) => (
+                    {({ field, form }) => (
                       <DatePicker
                         {...field}
                         style={{ width: "100%" }}
                         placeholder="Select Date of Joining"
+                        value={field.value ? field.value : null} // Ensure that field.value is a dayjs object or null
                         onChange={(value) =>
-                          setFieldValue("dateOfJoining", value)
-                        }
+                          form.setFieldValue("dateOfJoining", value)
+                        } // Set the moment object in Formik
                       />
                     )}
                   </Field>

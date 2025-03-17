@@ -241,7 +241,7 @@ function RootLayout({ children }) {
               </div>
               {isAuthenticated ? (
                 <Dropdown
-                  overlay={profileMenu}
+                  menu={profileMenu}
                   placement="bottomRight"
                   trigger={["click"]}
                 >

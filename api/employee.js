@@ -124,6 +124,8 @@ export const getEmployeeById = async (id, setter, setLoading) => {
     setLoading(true);
     const response = await axios.get(`${API_BASE_URL}/Employee/${id}`);
 
+    console.log("response", response);
+
     const modifyData = {
       ...response.data,
       firstname: response.data.firstName,
@@ -135,6 +137,7 @@ export const getEmployeeById = async (id, setter, setLoading) => {
       dateOfBirth: formatDate(response.data.dateOfBirth),
       grossSalary: response.data.grossSalary || 0,
     };
+    console.log("modifyData", modifyData);
 
     setter(modifyData);
     setLoading(false);

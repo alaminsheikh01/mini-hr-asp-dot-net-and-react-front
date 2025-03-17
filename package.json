@@ -14,6 +14,7 @@
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",
     "dayjs": "^1.11.13",
+    "dayjs-plugin-utc": "^0.1.2",
     "file-saver": "^2.0.5",
     "formik": "^2.4.6",
     "framer-motion": "^12.4.7",
