@@ -59,7 +59,7 @@ const EmployeeCreate = () => {
     getDepartments(setDepartments, setLoading);
     getDesignations(setDesignations, setLoading);
     if (employeeId) {
-      getEmployeeById(employeeId, setEmployee, setLoading);
+      // getEmployeeById(employeeId, setEmployee, setLoading);
     }
   }, [employeeId]);
 
