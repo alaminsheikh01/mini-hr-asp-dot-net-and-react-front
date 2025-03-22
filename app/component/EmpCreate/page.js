@@ -13,25 +13,9 @@ import { Input, Select, Button, Typography, Row, Col, DatePicker } from "antd";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { calculateServicePeriod, initialValues } from "./helper";
 
 const { Option } = Select;
-
-const initialValues = {
-  firstname: "",
-  lastname: "",
-  employeeID: "",
-  gender: "",
-  insuranceID: "",
-  department: "",
-  designation: "",
-  email: "",
-  phoneNumber: "",
-  dateOfBirth: null,
-  employeeStatus: "",
-  employeeType: "",
-  address: "",
-  dateOfJoining: null,
-};
 
 const validationSchema = Yup.object({
   firstname: Yup.string().required("First Name is required"),
@@ -70,22 +54,42 @@ const EmployeeCreate = () => {
       lastName: values.lastname,
       employeeCode: values.employeeCode || "",
       gender: values.gender,
-      grade: values.grade || 0,
+      grade: +values.grade || 0,
       insuranceNumber: values.insuranceID,
-      DepartmentId: values.department,
-      DesignationId: values.designation,
-      Email: values.email,
-      PhoneNumber: values.phoneNumber,
-      DateOfBirth: values?.dateOfBirth
+      departmentId: values.department,
+      designationId: values.designation,
+      email: values.email,
+      phoneNumber: values.phoneNumber,
+      dateOfBirth: values?.dateOfBirth
         ? values?.dateOfBirth.format("YYYY-MM-DD")
         : null,
       employeeStatus: values.employeeStatus,
-      EmployeeType: values.employeeType,
-      Address: values.address,
-      DateOfJoining: values.dateOfJoining
+      employeeType: values.employeeType,
+      address: values.address,
+      dateOfJoining: values.dateOfJoining
         ? values.dateOfJoining.format("YYYY-MM-DD")
         : null,
+      emergencyContact: values.emergencyContact,
+      nid: values.nid,
+      presentAddress: values.presentAddress,
+      permanentAddress: values.permanentAddress,
+      bloodGroup: values.bloodGroup,
+      confirmationDate: values.confirmationDate
+        ? values.confirmationDate.format("YYYY-MM-DD")
+        : null,
+      retirementOrResignation: values.retirementOrResignation
+        ? values.retirementOrResignation.format("YYYY-MM-DD")
+        : null,
+      servicePeriod: values.servicePeriod || 0,
+      salaryAccountNumber: values.salaryAccountNumber,
+      etin: values.etin,
+      academicQualifications: values.academicQualifications,
+      certificateVerification: values.certificateVerification,
+      policeVerification: values.policeVerification,
+      disciplinaryAction: values.disciplinaryAction,
+      jobLocation: values.jobLocation,
       tinNumber: values.tinNumber || 0,
+      employeeSalaryGrade: values.employeeSalaryGrade || "",
     };
     payloadList.push(payload);
     if (employeeId) {
@@ -413,39 +417,30 @@ const EmployeeCreate = () => {
                     Employee Grade:
                   </label>
                   <Field name="grade">
-                    {({ field }) => (
+                    {({ field, form }) => (
                       <Select
                         {...field}
                         placeholder="Select Employee Grade"
                         style={{ width: "100%" }}
                         value={field.value}
-                        onChange={(value, op) => setFieldValue("grade", value)}
+                        onChange={(value) => form.setFieldValue("grade", value)}
                       >
-                        <Option value="1">1</Option>
-                        <Option value="2">2</Option>
-                        <Option value="3">3</Option>
-                        <Option value="4">4</Option>
-                        <Option value="5">5</Option>
-                        <Option value="6">6</Option>
-                        <Option value="7">7</Option>
-                        <Option value="8">8</Option>
-                        <Option value="9">9</Option>
-                        <Option value="10">10</Option>
-                        <Option value="11">11</Option>
-                        <Option value="12">12</Option>
-                        <Option value="13">13</Option>
-                        <Option value="14">14</Option>
-                        <Option value="15">15</Option>
+                        {[...Array(15).keys()].map((i) => (
+                          <Option key={i + 1} value={i + 1}>
+                            {i + 1}
+                          </Option>
+                        ))}
                       </Select>
                     )}
                   </Field>
                   <ErrorMessage
-                    name="employeeStatus"
+                    name="grade"
                     component="div"
                     style={{ color: "red" }}
                   />
                 </div>
               </Col>
+
               <Col span={8}>
                 <div style={{ marginBottom: "15px" }}>
                   <label htmlFor="insuranceID" style={{ fontWeight: "bold" }}>
@@ -501,6 +496,399 @@ const EmployeeCreate = () => {
                   </Field>
                   <ErrorMessage
                     name="dateOfBirth"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="jobLocation" style={{ fontWeight: "bold" }}>
+                    Job Location:
+                  </label>
+                  <Field name="jobLocation">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter job location" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="jobLocation"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="employeeSalaryGrade"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Employee Salary Grade:
+                  </label>
+                  <Field name="employeeSalaryGrade">
+                    {({ field, form }) => (
+                      <Select
+                        {...field}
+                        placeholder="Select Employee Salary Grade"
+                        style={{ width: "100%" }}
+                        value={field.value}
+                        onChange={(value) =>
+                          form.setFieldValue("employeeSalaryGrade", value)
+                        }
+                      >
+                        {[...Array(15).keys()].map((i) => (
+                          <Option key={i + 1} value={i + 1}>
+                            {i + 1}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="employeeSalaryGrade"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="emergencyContact"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Emergency Contact:
+                  </label>
+                  <Field name="emergencyContact">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter emergency contact" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="emergencyContact"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="nid" style={{ fontWeight: "bold" }}>
+                    NID:
+                  </label>
+                  <Field name="nid">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter NID" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="nid"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="presentAddress"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Present Address:
+                  </label>
+                  <Field name="presentAddress">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter present address" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="presentAddress"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="permanentAddress"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Permanent Address:
+                  </label>
+                  <Field name="permanentAddress">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter permanent address" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="permanentAddress"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="bloodGroup" style={{ fontWeight: "bold" }}>
+                    Blood Group:
+                  </label>
+                  <Field name="bloodGroup">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter blood group" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="bloodGroup"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="confirmationDate"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Confirmation Date:
+                  </label>
+                  <Field name="confirmationDate">
+                    {({ field, form }) => (
+                      <DatePicker
+                        {...field}
+                        style={{ width: "100%" }}
+                        placeholder="Select Confirmation Date"
+                        value={field.value ? field.value : null}
+                        onChange={(value) => {
+                          form.setFieldValue("confirmationDate", value);
+                          calculateServicePeriod(
+                            value,
+                            form.values.retirementOrResignation,
+                            form.setFieldValue
+                          );
+                        }}
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="confirmationDate"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="retirementOrResignation"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Retirement or Resignation:
+                  </label>
+                  <Field name="retirementOrResignation">
+                    {({ field, form }) => (
+                      <DatePicker
+                        {...field}
+                        style={{ width: "100%" }}
+                        placeholder="Select Retirement or Resignation Date"
+                        value={field.value ? field.value : null}
+                        onChange={(value) => {
+                          form.setFieldValue("retirementOrResignation", value);
+                          calculateServicePeriod(
+                            form.values.confirmationDate,
+                            value,
+                            form.setFieldValue
+                          );
+                        }}
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="retirementOrResignation"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="servicePeriod" style={{ fontWeight: "bold" }}>
+                    Service Period:
+                  </label>
+                  <Field name="servicePeriod">
+                    {({ field }) => (
+                      <Input
+                        {...field}
+                        placeholder="Service period (Auto-calculated)"
+                        disabled
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="servicePeriod"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="salaryAccountNumber"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Salary Account Number:
+                  </label>
+                  <Field name="salaryAccountNumber">
+                    {({ field }) => (
+                      <Input
+                        {...field}
+                        placeholder="Enter salary account number"
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="salaryAccountNumber"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="etin" style={{ fontWeight: "bold" }}>
+                    ETIN:
+                  </label>
+                  <Field name="etin">
+                    {({ field }) => (
+                      <Input {...field} placeholder="Enter ETIN" />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="etin"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="academicQualifications"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Academic Qualifications:
+                  </label>
+                  <Field name="academicQualifications">
+                    {({ field }) => (
+                      <Input
+                        {...field}
+                        placeholder="Enter academic qualifications"
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="academicQualifications"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="certificateVerification"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Certificate Verification:
+                  </label>
+                  <Field name="certificateVerification">
+                    {({ field }) => (
+                      <Select
+                        {...field}
+                        placeholder="Select Certificate Verification"
+                        style={{ width: "100%" }}
+                        value={field.value}
+                        onChange={(value, op) =>
+                          setFieldValue("certificateVerification", value)
+                        }
+                      >
+                        <Option value={true}>Yes</Option>
+                        <Option value={false}>No</Option>
+                      </Select>
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="certificateVerification"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="policeVerification"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Police Verification:
+                  </label>
+                  <Field name="policeVerification">
+                    {({ field }) => (
+                      <Select
+                        {...field}
+                        placeholder="Select Police Verification"
+                        style={{ width: "100%" }}
+                        value={field.value}
+                        onChange={(value, op) =>
+                          setFieldValue("policeVerification", value)
+                        }
+                      >
+                        <Option value={true}>Yes</Option>
+                        <Option value={false}>No</Option>
+                      </Select>
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="policeVerification"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </div>
+              </Col>
+              <Col span={8}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    htmlFor="disciplinaryAction"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Disciplinary Action:
+                  </label>
+                  <Field name="disciplinaryAction">
+                    {({ field }) => (
+                      <Select
+                        {...field}
+                        placeholder="Select Disciplinary Action"
+                        style={{ width: "100%" }}
+                        value={field.value}
+                        onChange={(value, op) =>
+                          setFieldValue("disciplinaryAction", value)
+                        }
+                      >
+                        <Option value={true}>Yes</Option>
+                        <Option value={false}>No</Option>
+                      </Select>
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="disciplinaryAction"
                     component="div"
                     style={{ color: "red" }}
                   />

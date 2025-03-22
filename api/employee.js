@@ -34,7 +34,7 @@ export const getEmployees = async (setter, setLoading) => {
     setLoading(false);
     return response.data;
   } catch (error) {
-    toast.warn("Error fetching employees");
+    // toast.warn("Error fetching employees");
     setLoading(false);
     throw error;
   }
@@ -79,7 +79,7 @@ export const getEmpSalaryLanding = async (setter, setLoading, Id) => {
     setter(response.data);
     setLoading(false);
   } catch (error) {
-    toast.warn(error?.response?.data?.message || "Error fetching employees");
+    // toast.warn(error?.response?.data?.message || "Error fetching employees");
     setter([]);
     setLoading(false);
   }
@@ -95,7 +95,7 @@ export const getSalaryHeaderData = async (setter, setLoading, salaryCode) => {
     setter(response.data);
     setLoading(false);
   } catch (error) {
-    toast.warn("Error fetching salary header data");
+    // toast.warn("Error fetching salary header data");
     setLoading(false);
   }
 };
@@ -262,7 +262,8 @@ export const getDepartments = async (setter, setLoading) => {
     setter(res.data);
     setLoading(false);
   } catch (error) {
-    toast.warn("Error fetching departments");
+    // toast.warn("Error fetching departments");
+    setLoading(false);
   }
 };
 
@@ -273,7 +274,8 @@ export const getDesignations = async (setter, setLoading) => {
     setter(res.data);
     setLoading(false);
   } catch (error) {
-    toast.warn("Error fetching designations");
+    setLoading(false);
+    // toast.warn("Error fetching designations");
   }
 };
 
