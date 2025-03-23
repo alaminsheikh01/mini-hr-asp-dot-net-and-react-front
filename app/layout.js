@@ -56,7 +56,9 @@ function RootLayout({ children }) {
         <Avatar size={48} icon={<UserOutlined />} />
         <div style={{ fontWeight: "bold", marginTop: "8px" }}>{userName}</div>
         <div style={{ color: "gray", fontSize: "12px" }}>{email}</div>
-        <div style={{ color: "gray", fontSize: "12px" }}>{`Role: ${isMasterUser ? "Admin" : "Employee"}`}</div>
+        <div style={{ color: "gray", fontSize: "12px" }}>{`Role: ${
+          isMasterUser ? "Admin" : "Employee"
+        }`}</div>
       </div>
       <Menu.Divider />
       <Menu.Item
@@ -154,24 +156,41 @@ function RootLayout({ children }) {
       ],
     },
 
-    isMasterUser && {
-      key: "4",
-      icon: <AppstoreAddOutlined />,
-      label: "Create Department",
-      onClick: () => {
-        document.title = "Create Department - Employee Management";
-        router.push("/component/DepCreate");
-      },
-    },
     {
-      key: "5",
+      key: "4",
       icon: <TeamOutlined />,
-      label: "Create Designation",
-      onClick: () => {
-        document.title = "Create Designation - Employee Management";
-        router.push("/component/DegCreate");
-      },
+      label: "Control Panel",
+      children: [
+        {
+          key: "control1",
+          icon: <AppstoreAddOutlined />,
+          label: "Create Department",
+          onClick: () => {
+            document.title = "Create Department - Employee Management";
+            router.push("/component/DepCreate");
+          },
+        },
+        {
+          key: "control2",
+          icon: <TeamOutlined />,
+          label: "Create Designation",
+          onClick: () => {
+            document.title = "Create Designation - Employee Management";
+            router.push("/component/DegCreate");
+          },
+        },
+        {
+          key: "control3",
+          icon: <TeamOutlined />,
+          label: "PayScale Setup",
+          onClick: () => {
+            document.title = "PayScale Setup - Employee Management";
+            router.push("/component/payScale");
+          },
+        },
+      ],
     },
+
     {
       key: "6",
       icon: <TeamOutlined />,
@@ -216,7 +235,12 @@ function RootLayout({ children }) {
                   height: "40px",
                 }}
               ></div>
-              <Menu theme="dark" mode="inline" style={{marginTop:'17px'}} items={menuItems} />
+              <Menu
+                theme="dark"
+                mode="inline"
+                style={{ marginTop: "17px" }}
+                items={menuItems}
+              />
             </Sider>
           )}
 
@@ -263,7 +287,14 @@ function RootLayout({ children }) {
                 background: "#fff",
               }}
             >
-              <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+              <Suspense fallback={<div>Loading...</div>}>
+                {React.Children.count(children) === 1 ? (
+                  children
+                ) : (
+                  <div>{children}</div>
+                )}
+              </Suspense>
+
               <ToastContainer />
             </Content>
             <Chatbot />

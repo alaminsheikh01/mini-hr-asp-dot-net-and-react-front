@@ -124,8 +124,6 @@ export const getEmployeeById = async (id, setter, setLoading) => {
     setLoading(true);
     const response = await axios.get(`${API_BASE_URL}/Employee/${id}`);
 
-    console.log("response", response);
-
     const modifyData = {
       ...response.data,
       firstname: response.data.firstName,
@@ -135,9 +133,36 @@ export const getEmployeeById = async (id, setter, setLoading) => {
       insuranceID: response.data.insuranceNumber,
       dateOfJoining: formatDate(response.data.dateOfJoining),
       dateOfBirth: formatDate(response.data.dateOfBirth),
-      grossSalary: response.data.grossSalary || 0,
+
+      // Additional fields
+      emergencyContact: response.data.emergencyContact,
+      nid: response.data.nid,
+      presentAddress: response.data.presentAddress,
+      permanentAddress: response.data.permanentAddress,
+      bloodGroup: response.data.bloodGroup,
+      confirmationDate: formatDate(response.data.confirmationDate),
+      retirementOrResignation: formatDate(
+        response.data.retirementOrResignation
+      ),
+      servicePeriod: response.data.servicePeriod,
+      salaryAccountNumber: response.data.salaryAccountNumber,
+      etin: response.data.etin,
+      academicQualifications: response.data.academicQualifications,
+      certificateVerification: response.data.certificateVerification,
+      policeVerification: response.data.policeVerification,
+      disciplinaryAction: response.data.disciplinaryAction,
+      jobLocation: response.data.jobLocation,
+
+      // Employee type and salary grade fields
+      employeeType: response.data.employeeType,
+      employeeSalaryGrade: response.data.employeeSalaryGrade,
+
+      // Status options
+      status: response.data.status,
+      // Salary-related fields
+      grossSalary: response.data.grossSalary,
+      basicSalary: response.data.basicSalary,
     };
-    console.log("modifyData", modifyData);
 
     setter(modifyData);
     setLoading(false);
@@ -316,6 +341,31 @@ export const createLoan = async (payload, setLoading) => {
     setLoading(false);
   } catch (error) {
     toast.warn("Error creating loan");
+    setLoading(false);
+  }
+};
+
+export const getPayScaleLanding = async (Id = 0, setter, setLoading) => {
+  try {
+    setLoading(true);
+    const res = await axios.get(`${API_BASE_URL}/Employee/GetAllPayScaleSetup`);
+    setter(res.data);
+    setLoading(false);
+  } catch (error) {
+    setLoading(false);
+  }
+};
+
+export const createPayScaleSetup = async (payload, setLoading) => {
+  try {
+    setLoading(true);
+    const res = await axios.post(
+      `${API_BASE_URL}/Employee/PayScaleSetup`,
+      payload
+    );
+    toast.success("PayScale created successfully");
+    setLoading(false);
+  } catch (error) {
     setLoading(false);
   }
 };

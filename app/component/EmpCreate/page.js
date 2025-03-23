@@ -88,8 +88,8 @@ const EmployeeCreate = () => {
       policeVerification: values.policeVerification,
       disciplinaryAction: values.disciplinaryAction,
       jobLocation: values.jobLocation,
-      tinNumber: values.tinNumber || 0,
-      employeeSalaryGrade: values.employeeSalaryGrade || "",
+      tinNumber: +values.tinNumber || 0,
+      employeeSalaryGrade: String(values.employeeSalaryGrade) || "",
     };
     payloadList.push(payload);
     if (employeeId) {
